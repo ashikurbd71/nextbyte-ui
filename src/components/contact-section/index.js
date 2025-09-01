@@ -1,0 +1,6 @@
+export { ContactHeader } from './contact-header'
+export { ContactForm } from './contact-form'
+export { ContactInfo } from './contact-info'
+export { ContactMap } from './contact-map'
+export { FAQSection } from './faq-section'
+export { BackgroundDecorations } from './background-decorations'
