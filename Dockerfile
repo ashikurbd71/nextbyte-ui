@@ -15,11 +15,11 @@ RUN pnpm install --frozen-lockfile
 # Copy the rest of the application source code
 COPY . .
 
-# Build the static assets for production
+
 # This will create a 'dist' folder.
 RUN pnpm run build
 
-# ---- Runtime Stage ----
+
 # Sets up a lightweight server to serve the static files.
 FROM node:24-alpine AS runtime
 WORKDIR /app
