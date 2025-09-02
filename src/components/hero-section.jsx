@@ -13,7 +13,7 @@ export function HeroSection() {
     console.log("Hero Video ID:", videoId)
 
     return (
-        <section className="relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
+        <section className="relative min-h-screen 2xl:py-32 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
             {/* Dotted background pattern */}
             <div className="absolute inset-0 opacity-10">
                 <div className="absolute inset-0" style={{
