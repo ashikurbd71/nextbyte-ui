@@ -1,0 +1,32 @@
+services:
+  client-app:
+    build: .
+    image: nextbyte-client-app
+    container_name: "nextbyte-client-app"
+    restart: always
+    env_file:
+      - ./.env
+
+    networks:
+      - proxy
+    labels:
+      # --- Traefik Configuration ---
+      - "traefik.enable=true"
+      # Rule to route traffic for the specified host
+      - "traefik.http.routers.client-app.rule=Host(`nextbyteitinstitute.com`)"
+      - "traefik.http.routers.client-app.priority=10"
+      # Use the 'websecure' entrypoint (typically for HTTPS)
+      - "traefik.http.routers.client-app.entrypoints=websecure"
+      # Enable TLS and specify the Let's Encrypt resolver
+      - "traefik.http.routers.client-app.tls.certresolver=leresolver"
+      - "traefik.http.routers.client-app.tls=true"
+      # Link the router to the service definition below
+      - "traefik.http.routers.client-app.service=client-app"
+      # Tell Traefik which port the application is running on inside the container
+      - "traefik.http.services.client-app.loadbalancer.server.port=3000"
+
+# Defines the external network created by Traefik
+networks:
+  proxy:
+    external: true
+    name: traefik_proxy

@@ -14,15 +14,24 @@ import { useAuth } from "@/contexts/auth-context"
 
 export function CourseAnalyticsContent() {
     const router = useRouter()
-    const searchParams = useSearchParams()
     const [activeTab, setActiveTab] = useState("leaderboard")
     const [course, setCourse] = useState(null)
     const [leaderboardData, setLeaderboardData] = useState(null)
     const [totalStudents, setTotalStudents] = useState(0)
+    const [mounted, setMounted] = useState(false)
     const { user: authUser } = useAuth()
 
-    // Get course data from URL params
+    // Get course data from URL params using useSearchParams
+    const searchParams = useSearchParams()
+
     useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    useEffect(() => {
+        if (!mounted) return
+
+        // Get URL parameters using useSearchParams hook
         const courseId = searchParams.get('id')
         const courseTitle = searchParams.get('title')
         const courseProgress = searchParams.get('progress')
@@ -38,12 +47,15 @@ export function CourseAnalyticsContent() {
             })
             setTotalStudents(parseInt(totalStudents) || 0)
         }
+
         const fetchCourseAnalytics = async () => {
-            const response = await getCourseLeaderboard(courseId)
-            setLeaderboardData(response)
+            if (courseId) {
+                const response = await getCourseLeaderboard(courseId)
+                setLeaderboardData(response)
+            }
         }
         fetchCourseAnalytics()
-    }, [searchParams])
+    }, [mounted, searchParams])
 
     console.log(leaderboardData)
 

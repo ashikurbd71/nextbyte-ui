@@ -1,19 +1,25 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { AlertTriangle, X } from "lucide-react"
 
 export function BanNotification() {
-    const searchParams = useSearchParams()
     const [showNotification, setShowNotification] = useState(false)
     const [banReason, setBanReason] = useState("")
+    const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
-        // Check if user was redirected due to ban
-        const isBanned = searchParams.get("banned")
-        const reason = searchParams.get("reason")
+        setMounted(true)
+    }, [])
+
+    useEffect(() => {
+        if (!mounted) return
+
+        // Check if user was redirected due to ban - only on client side
+        const urlParams = new URLSearchParams(window.location.search)
+        const isBanned = urlParams.get("banned")
+        const reason = urlParams.get("reason")
 
         if (isBanned === "true") {
             setShowNotification(true)
@@ -26,13 +32,13 @@ export function BanNotification() {
 
             return () => clearTimeout(timer)
         }
-    }, [searchParams])
+    }, [mounted])
 
     const handleClose = () => {
         setShowNotification(false)
     }
 
-    if (!showNotification) return null
+    if (!mounted || !showNotification) return null
 
     return (
         <AnimatePresence>

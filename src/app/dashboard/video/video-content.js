@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { useSearchParams } from "next/navigation"
+
 import { VideoPlayer, VideoInfo, CourseModules, NotesSection, ProgressBar, LessonContent } from "@/components/dashboard"
 import { useAuth } from "@/contexts/auth-context"
 import { submitAssignment, resubmitAssignment, getSubmissionById } from "@/app/apis/assignment-submesion/assignmentsubmesionApis"

@@ -8,6 +8,7 @@ import { ConditionalNavigation } from "@/components/conditional-navigation";
 import { BanNotification } from "@/components/auth/ban-notification";
 import { Toaster } from 'sonner'
 import ErrorBoundary from '@/components/error-boundary'
+import { Suspense } from 'react'
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
@@ -27,9 +28,13 @@ export default function RootLayout({ children }) {
           <AuthProvider>
             <ErrorBoundary>
               <Toaster />
-              <BanNotification />
+              <Suspense fallback={null}>
+                <BanNotification />
+              </Suspense>
               <div className="flex flex-col min-h-screen">
-                <ConditionalNavigation />
+                <Suspense fallback={null}>
+                  <ConditionalNavigation />
+                </Suspense>
                 <main className="flex-grow">{children}</main>
                 <Footer />
               </div>
