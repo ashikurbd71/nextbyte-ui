@@ -19,9 +19,8 @@ pnpm-debug.log*
 yarn-error.log*
 
 # Environment variables (IMPORTANT for security)
-.env
-.env.*
-!.env.example
+
+
 
 # OS-specific files
 .DS_Store
