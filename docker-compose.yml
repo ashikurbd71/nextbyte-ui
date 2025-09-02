@@ -10,7 +10,6 @@ services:
     networks:
       - proxy
     labels:
-      # --- Traefik Configuration ---
       - "traefik.enable=true"
       # Rule to route traffic for the specified host
       - "traefik.http.routers.client-app.rule=Host(`nextbyteitinstitute.com`)"
