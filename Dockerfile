@@ -15,31 +15,24 @@ RUN pnpm install --frozen-lockfile
 # Copy the rest of the application source code
 COPY . .
 
-
-# This will create a 'dist' folder.
+# Build the Next.js application
 RUN pnpm run build
 
-
-# Sets up a lightweight server to serve the static files.
+# Sets up a lightweight server to serve the Next.js application.
 FROM node:24-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Set PNPM_HOME and add it to the PATH to fix global installs
-ENV PNPM_HOME="/pnpm"
-ENV PATH="/pnpm:$PATH"
-
-# Install 'serve', a lightweight static file server
-RUN corepack enable pnpm && pnpm add -g serve
-
 # Create a non-root user for security
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 appuser
 
-# Copy the built static assets from the builder stage
-# Vite outputs to a 'dist' folder by default.
-COPY --from=builder --chown=appuser:nodejs /app/dist ./dist
+# Copy the built Next.js standalone application from the builder stage
+# Next.js with output: 'standalone' creates a .next/standalone directory
+COPY --from=builder --chown=appuser:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=appuser:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=appuser:nodejs /app/public ./public
 
 # Switch to the non-root user
 USER appuser
@@ -50,7 +43,5 @@ EXPOSE 3000
 
 ENV PORT=3000
 
-# Start the 'serve' command to serve the 'dist' folder.
-# The "-s" flag is crucial for Single Page Applications (SPAs) like React,
-# as it rewrites all not-found requests to index.html.
-CMD ["serve", "-s", "dist", "-l", "tcp://0.0.0.0:3000"]
+# Start the Next.js server
+CMD ["node", "server.js"]
