@@ -20,7 +20,7 @@ export function MentorCard({ mentor, delay = 0 }) {
                     src={image}
                     alt={`${name} - ${role}`}
                     height={400}
-                    width={300}
+                    width={500}
                     className="object-cover"
                 />
                 {/* Gradient overlay */}

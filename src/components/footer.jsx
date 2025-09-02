@@ -278,6 +278,16 @@ export function Footer() {
                             Made with <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" /> for the tech community
                         </span>
                     </p>
+                    <p className="text-white/60 text-xs sm:text-sm mt-2">
+                        <a
+                            href="https://innowavesolution.vercel.app/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-yellow-300 transition-colors duration-300"
+                        >
+                            Developed by InnoWave Solution
+                        </a>
+                    </p>
                 </motion.div>
             </div>
         </footer>
