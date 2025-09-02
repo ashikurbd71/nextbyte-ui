@@ -7,7 +7,7 @@ import { YouTubePlayer, extractYouTubeVideoId } from "./ui/youtube-player"
 
 export function HeroSection() {
     // Extract video ID from the YouTube URL
-    const videoUrl = "https://www.youtube.com/embed/g--Z6tk-GZA?si=1NAy8sgqImCtCz2R"
+    const videoUrl = "https://youtu.be/nm90PqWMd2c?si=ytS0gqs2H4PctUP_"
     const videoId = extractYouTubeVideoId(videoUrl)
 
     console.log("Hero Video ID:", videoId)
@@ -147,7 +147,7 @@ export function HeroSection() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center">
                     {/* Left Column - Text Content */}
                     <motion.div
-                        className="text-center lg:text-left order-2 lg:order-1"
+                        className="text-center lg:text-left order-2 pt-10 lg:pt-0 lg:order-1"
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
@@ -161,12 +161,12 @@ export function HeroSection() {
                         >
                             <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                             <span className="text-xs sm:text-sm font-medium text-white">
-                                Join 50K+ Students Worldwide
+                                Join 5K+ Students Worldwide
                             </span>
                         </motion.div>
 
                         <motion.h1
-                            className=" lg:text-4xl 2xl:text-6xl text-2xl font-bold text-white mb-4 sm:mb-6 leading-tight"
+                            className=" lg:text-4xl 2xl:text-5xl text-2xl font-bold text-white mb-4 sm:mb-6 leading-tight"
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
@@ -183,7 +183,44 @@ export function HeroSection() {
                         >
                             We have been studying technology since childhood. But do we have a true understanding of modern development? Or do we know what skills to master for the digital age? NextByte is working to firmly establish the core concepts of technology. We are a one-stop solution for Frontend Development, Graphic Design, Video Editing and any Tech Career Path.
                         </motion.p>
+                        <motion.div
+                            className="py-10 lg:hidden block  lg:pt-0 "
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                        >
+                            {/* Glowing Border Frame with Floating Animation */}
+                            <motion.div
+                                className="relative p-1 bg-gradient-to-r from-white/20 via-purple-500/30 to-pink-500/30 rounded-xl sm:rounded-2xl shadow-2xl max-w-lg mx-auto lg:max-w-none"
+                                animate={{
+                                    y: [0, -10, 0],
+                                    scale: [1, 1.02, 1]
+                                }}
+                                transition={{
+                                    duration: 3,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                }}
+                            >
+                                <div className="relative bg-gradient-to-br from-purple-900/80 to-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 border border-white/10">
+                                    {/* Video Container Only */}
+                                    <div className="relative">
+                                        <div className="aspect-video bg-black/50 rounded-lg overflow-hidden border border-white/20">
+                                            <YouTubePlayer
+                                                videoId={videoId}
+                                                onStateChange={(event) => {
+                                                    console.log('Hero player state changed:', event.data)
+                                                }}
+                                            />
+                                        </div>
 
+                                        {/* Dynamic Light Effects */}
+                                        <div className="absolute top-0 right-0 w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse"></div>
+                                        <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 bg-gradient-to-tr from-blue-500/20 to-cyan-500/20 rounded-full blur-lg animate-pulse" style={{ animationDelay: '1s' }}></div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </motion.div>
 
 
                         <motion.div
@@ -218,7 +255,7 @@ export function HeroSection() {
 
                     {/* Right Column - Video Only */}
                     <motion.div
-                        className="order-1 pt-12 lg:pt-0 lg:order-2"
+                        className="order-1 pt-12 lg:block hidden lg:pt-0 lg:order-2"
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
