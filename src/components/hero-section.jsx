@@ -3,7 +3,7 @@
 import { Button } from "./ui/button"
 import { motion } from "framer-motion"
 import { ArrowRight, Play, Sparkles, Zap, Target, Star, Heart, BookOpen, Code, Rocket, Globe, Lightbulb, CheckCircle } from "lucide-react"
-import { YouTubePlayer, extractYouTubeVideoId } from "./ui/youtube-player"
+import { YouTubePlayer, YouTubeThumbnailPlayer, extractYouTubeVideoId } from "./ui/youtube-player"
 
 export function HeroSection() {
     // Extract video ID from the YouTube URL
@@ -206,7 +206,7 @@ export function HeroSection() {
                                     {/* Video Container Only */}
                                     <div className="relative">
                                         <div className="aspect-video bg-black/50 rounded-lg overflow-hidden border border-white/20">
-                                            <YouTubePlayer
+                                            <YouTubeThumbnailPlayer
                                                 videoId={videoId}
                                                 onStateChange={(event) => {
                                                     console.log('Hero player state changed:', event.data)
@@ -277,7 +277,7 @@ export function HeroSection() {
                                 {/* Video Container Only */}
                                 <div className="relative">
                                     <div className="aspect-video bg-black/50 rounded-lg overflow-hidden border border-white/20">
-                                        <YouTubePlayer
+                                        <YouTubeThumbnailPlayer
                                             videoId={videoId}
                                             onStateChange={(event) => {
                                                 console.log('Hero player state changed:', event.data)

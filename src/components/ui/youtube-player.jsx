@@ -7,7 +7,8 @@ let isYouTubeAPILoading = false
 let isYouTubeAPIReady = false
 
 // YouTube Player Component
-export function YouTubePlayer({ videoId, onStateChange, className = "w-full h-full" }) {
+export function
+    YouTubePlayer({ videoId, onStateChange, className = "w-full h-full" }) {
     const playerRef = useRef(null)
     const iframeRef = useRef(null)
     const [isPlayerReady, setIsPlayerReady] = useState(false)
@@ -66,7 +67,7 @@ export function YouTubePlayer({ videoId, onStateChange, className = "w-full h-fu
                     playerRef.current = new window.YT.Player(iframeRef.current, {
                         videoId: videoId,
                         playerVars: {
-                            autoplay: 1,
+                            autoplay: 0, // Changed from 1 to 0 to disable auto-play
                             mute: 0,
                             controls: 1,
                             rel: 0,
