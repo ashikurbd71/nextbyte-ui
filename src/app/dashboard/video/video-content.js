@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { toast } from 'sonner'
 
 import { VideoPlayer, VideoInfo, CourseModules, NotesSection, ProgressBar, LessonContent } from "@/components/dashboard"
 import { useAuth } from "@/contexts/auth-context"
@@ -349,6 +350,12 @@ export function VideoContent({ enrollment }) {
             }
             saveVideoProgress(progressToSave)
 
+            // Show success toast
+            const lesson = modules.flatMap(m => m.lessons || []).find(l => l.id === lessonId)
+            if (lesson) {
+                toast.success(`✅ Lesson "${lesson.title}" completed successfully!`)
+            }
+
             // Trigger automatic progress update when video is completed
             setTimeout(() => {
                 updateEnrollmentProgressFromVideo(lessonId, newCompletedLessons)
@@ -389,8 +396,10 @@ export function VideoContent({ enrollment }) {
 
             await updateEnrollmentProgress(enrollment.id, progressData)
             console.log('Video completion triggered progress update:', progressData)
+            toast.success(`📊 Course progress updated to ${overallProgress}%`)
         } catch (error) {
             console.error('Error updating enrollment progress from video completion:', error)
+            toast.error('Failed to update course progress')
         } finally {
             setIsUpdatingProgress(false)
         }
@@ -438,8 +447,10 @@ export function VideoContent({ enrollment }) {
 
             await updateEnrollmentProgress(enrollment.id, progressData)
             console.log('Assignment submission triggered progress update:', progressData)
+            toast.success(`📊 Course progress updated to ${overallProgress}%`)
         } catch (error) {
             console.error('Error updating enrollment progress from assignment submission:', error)
+            toast.error('Failed to update course progress')
         } finally {
             setIsUpdatingProgress(false)
         }
@@ -671,15 +682,23 @@ export function VideoContent({ enrollment }) {
     }
 
     const handleNext = () => {
+        // Mark current lesson as completed before moving to next
+        if (currentLesson?.id && !completedLessons.has(currentLesson.id)) {
+            handleLessonComplete(currentLesson.id)
+            toast.success(`🎉 Lesson "${currentLesson.title}" marked as completed!`)
+        }
+
         if (currentLessonIndex < currentModule?.lessons?.length - 1) {
             const newLessonIndex = currentLessonIndex + 1
             setCurrentLessonIndex(newLessonIndex)
             saveCurrentPosition(currentModuleIndex, newLessonIndex)
+            toast.info(`📚 Moving to next lesson: ${currentModule?.lessons?.[newLessonIndex]?.title}`)
         } else if (currentModuleIndex < modules.length - 1) {
             const newModuleIndex = currentModuleIndex + 1
             setCurrentModuleIndex(newModuleIndex)
             setCurrentLessonIndex(0)
             saveCurrentPosition(newModuleIndex, 0)
+            toast.info(`🚀 Moving to next module: ${modules[newModuleIndex]?.title}`)
         }
     }
 
@@ -688,6 +707,7 @@ export function VideoContent({ enrollment }) {
             const newLessonIndex = currentLessonIndex - 1
             setCurrentLessonIndex(newLessonIndex)
             saveCurrentPosition(currentModuleIndex, newLessonIndex)
+            toast.info(`📚 Moving to previous lesson: ${currentModule?.lessons?.[newLessonIndex]?.title}`)
         } else if (currentModuleIndex > 0) {
             const newModuleIndex = currentModuleIndex - 1
             const previousModule = modules[newModuleIndex]
@@ -695,6 +715,7 @@ export function VideoContent({ enrollment }) {
             setCurrentModuleIndex(newModuleIndex)
             setCurrentLessonIndex(newLessonIndex)
             saveCurrentPosition(newModuleIndex, newLessonIndex)
+            toast.info(`🚀 Moving to previous module: ${previousModule?.title}`)
         }
     }
 

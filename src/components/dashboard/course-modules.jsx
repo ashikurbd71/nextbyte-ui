@@ -600,6 +600,11 @@ export function CourseModules({
                                                                             <span className="text-xs sm:text-sm text-white truncate">
                                                                                 {lesson?.title}
                                                                             </span>
+                                                                            {isCompleted && (
+                                                                                <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
+                                                                                    ✓ Completed
+                                                                                </span>
+                                                                            )}
                                                                         </div>
                                                                         <div className="flex items-center gap-2 flex-shrink-0">
                                                                             {getLessonContentIndicator(lesson)}
@@ -618,6 +623,14 @@ export function CourseModules({
                                                                             <div
                                                                                 className="bg-yellow-400 h-1 rounded-full transition-all duration-300"
                                                                                 style={{ width: `${progressPercentage}%` }}
+                                                                            />
+                                                                        </div>
+                                                                    )}
+                                                                    {isCompleted && (
+                                                                        <div className="mt-2 w-full bg-green-400/20 rounded-full h-1">
+                                                                            <div
+                                                                                className="bg-green-400 h-1 rounded-full transition-all duration-300"
+                                                                                style={{ width: "100%" }}
                                                                             />
                                                                         </div>
                                                                     )}

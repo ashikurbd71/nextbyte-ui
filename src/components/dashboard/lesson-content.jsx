@@ -286,6 +286,14 @@ export function LessonContent({
                 {renderContent()}
             </Card>
 
+            {/* Lesson Completion Status */}
+            {isCompleted && (
+                <div className="flex items-center justify-center gap-2 text-green-400 bg-green-400/10 p-3 rounded-lg">
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="text-sm font-medium">Lesson Completed! 🎉</span>
+                </div>
+            )}
+
             {/* Navigation Buttons */}
             <div className="flex items-center justify-between">
                 <Button
@@ -297,13 +305,24 @@ export function LessonContent({
                     ← Previous
                 </Button>
 
-                <Button
-                    onClick={onNext}
-                    disabled={!canGoNext}
-                    className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    Next →
-                </Button>
+                <div className="flex items-center gap-2">
+                    {!isCompleted && (
+                        <Button
+                            onClick={() => onLessonComplete(lesson?.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Mark Complete
+                        </Button>
+                    )}
+                    <Button
+                        onClick={onNext}
+                        disabled={!canGoNext}
+                        className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Next →
+                    </Button>
+                </div>
             </div>
 
             {/* Hidden download link */}
