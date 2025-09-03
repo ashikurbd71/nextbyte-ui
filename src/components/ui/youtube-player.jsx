@@ -144,7 +144,7 @@ export function YouTubeThumbnailPlayer({ videoId, onStateChange, className = "w-
                 playerRef.current = new window.YT.Player(iframeRef.current, {
                     videoId: videoId,
                     playerVars: {
-                        autoplay: 1,
+                        autoplay: 0,
                         mute: 0,
                         controls: 1,
                         rel: 0,
