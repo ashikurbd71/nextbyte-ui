@@ -22,7 +22,8 @@ import {
     Eye,
     Play,
     Download,
-    File
+    File,
+    RefreshCw
 } from "lucide-react"
 
 export function CourseModules({
@@ -146,6 +147,35 @@ export function CourseModules({
         return Math.round((completedModules / totalModules) * 100)
     }
 
+    // Calculate detailed progress for a module
+    const calculateDetailedProgress = (module) => {
+        const moduleAssignments = module?.assignments || []
+        const completedAssignments = moduleAssignments.filter(assignment =>
+            submittedAssignments.has(assignment.id)
+        ).length
+        const allAssignmentsComplete = moduleAssignments.length === 0 || completedAssignments === moduleAssignments.length
+
+        const moduleLessons = module?.lessons || []
+        const allLessonsComplete = moduleLessons.every(lesson =>
+            completedLessons?.has(lesson.id)
+        )
+
+        const lessonProgress = moduleLessons.reduce((sum, lesson) => {
+            const lessonProgress = videoProgress?.[lesson.id]
+            if (lessonProgress && lessonProgress.duration > 0) {
+                return sum + Math.round((lessonProgress.currentTime / lessonProgress.duration) * 100)
+            }
+            return sum
+        }, 0)
+
+        const lessonPercentage = moduleLessons.length > 0 ? Math.round(lessonProgress / moduleLessons.length) : 0
+
+        return {
+            lesson: lessonPercentage,
+            assignment: allAssignmentsComplete ? 100 : Math.round((completedAssignments / moduleAssignments.length) * 100)
+        }
+    }
+
     // Handle certificate generation
     const handleGenerateCertificate = async () => {
         if (!enrollmentId) {
@@ -174,6 +204,86 @@ export function CourseModules({
             setIsGeneratingCertificate(false)
         }
     }
+
+    // Function to trigger manual progress update for a specific module
+    const triggerProgressUpdate = async (moduleIndex, updateType) => {
+        if (!enrollmentId) {
+            toast.error('No enrollment ID available for progress update.')
+            return
+        }
+
+        const module = modules[moduleIndex]
+        if (!module) {
+            toast.error('Module not found.')
+            return
+        }
+
+        let progressToUpdate = 0
+        let message = ''
+
+        if (updateType === 'video') {
+            const lesson = module.lessons.find(l => l.isActive === true)
+            if (lesson) {
+                const lastWatchedPosition = getLastWatchedPosition(lesson.id)
+                if (lastWatchedPosition) {
+                    progressToUpdate = Math.round((lastWatchedPosition / lesson.duration) * 100)
+                    message = `Video progress updated to ${progressToUpdate}% for lesson "${lesson.title}"`
+                } else {
+                    toast.info('No video progress found for this lesson.')
+                    return
+                }
+            } else {
+                toast.info('No active lesson found in this module.')
+                return
+            }
+        } else if (updateType === 'assignment') {
+            const assignment = module.assignments.find(a => !submittedAssignments.has(a.id))
+            if (assignment) {
+                progressToUpdate = 100 // Assuming 100% for completed assignments
+                message = `Assignment progress updated to 100% for "${assignment.title}"`
+            } else {
+                toast.info('No unsubmitted assignments found in this module.')
+                return
+            }
+        } else if (updateType === 'lesson') {
+            const lesson = module.lessons.find(l => !completedLessons.has(l.id))
+            if (lesson) {
+                progressToUpdate = 100 // Assuming 100% for completed lessons
+                message = `Lesson progress updated to 100% for "${lesson.title}"`
+            } else {
+                toast.info('No uncompleted lessons found in this module.')
+                return
+            }
+        } else if (updateType === 'manual') {
+            toast.info('Manual progress update triggered.')
+            return
+        }
+
+        try {
+            setIsUpdatingProgress(true)
+            const progressData = {
+                progress: progressToUpdate,
+                completedModules: 0, // This will be calculated by the backend
+                totalModules: totalModules,
+                completedAssignments: 0, // This will be calculated by the backend
+                totalAssignments: 0, // This will be calculated by the backend
+                assignmentProgress: 0, // This will be calculated by the backend
+                modulesWithMilestones: [], // This will be calculated by the backend
+                lastUpdated: new Date().toISOString()
+            }
+
+            await updateEnrollmentProgress(enrollmentId, progressData)
+            console.log('Progress updated successfully:', progressData)
+            toast.success(message)
+        } catch (error) {
+            console.error('Error updating enrollment progress:', error)
+            toast.error('Failed to update progress. Please try again.')
+        } finally {
+            setIsUpdatingProgress(false)
+        }
+    }
+
+    // Calculate detailed progress for a module
     // Automatic progress update when video completion and assignment progress reach thresholds
     useEffect(() => {
         const checkAndUpdateProgress = async () => {
@@ -393,6 +503,54 @@ export function CourseModules({
                                                     style={{ width: `${moduleProgress}%` }}
                                                 />
                                             </div>
+
+                                            {/* Module Completion Status */}
+                                            {(() => {
+                                                const detailedProgress = calculateDetailedProgress(module)
+                                                const moduleAssignments = module?.assignments || []
+                                                const completedAssignments = moduleAssignments.filter(assignment =>
+                                                    submittedAssignments.has(assignment.id)
+                                                ).length
+                                                const allAssignmentsComplete = moduleAssignments.length === 0 || completedAssignments === moduleAssignments.length
+                                                const allLessonsComplete = (module?.lessons || []).every(lesson =>
+                                                    completedLessons?.has(lesson.id)
+                                                )
+                                                const isModuleComplete = moduleProgress === 100 && allAssignmentsComplete && allLessonsComplete
+
+                                                if (isModuleComplete) {
+                                                    return (
+                                                        <div className="mt-2 flex items-center justify-center gap-2 text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
+                                                            <CheckCircle className="w-3 h-3" />
+                                                            Module Complete! 🎉
+                                                        </div>
+                                                    )
+                                                } else {
+                                                    return (
+                                                        <div className="mt-2 space-y-1">
+                                                            {/* Completion Checklist */}
+                                                            <div className="grid grid-cols-2 gap-2 text-xs">
+                                                                <div className={`flex items-center gap-1 ${allLessonsComplete ? 'text-green-400' : 'text-gray-400'}`}>
+                                                                    {allLessonsComplete ? <CheckCircle className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
+                                                                    <span>Lessons: {detailedProgress.lesson}%</span>
+                                                                </div>
+                                                                <div className={`flex items-center gap-1 ${allAssignmentsComplete ? 'text-green-400' : 'text-gray-400'}`}>
+                                                                    {allAssignmentsComplete ? <CheckCircle className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
+                                                                    <span>Assignments: {detailedProgress.assignment}%</span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Progress towards completion */}
+                                                            {moduleProgress < 100 && (
+                                                                <div className="text-xs text-yellow-400 text-center">
+                                                                    {moduleProgress < 50 ? '🚀 Getting started...' :
+                                                                        moduleProgress < 80 ? '📚 Making good progress...' :
+                                                                            '🎯 Almost there!'}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )
+                                                }
+                                            })()}
                                         </div>
                                     </div>
 
