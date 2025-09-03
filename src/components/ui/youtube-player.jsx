@@ -128,7 +128,7 @@ export function YouTubeThumbnailPlayer({ videoId, onStateChange, className = "w-
     const iframeRef = useRef(null)
 
     // Generate thumbnail URL
-    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/${thumbnailQuality}.jpg`
+    const thumbnailUrl = `https://cdn.nextbyteitinstitute.com/api/cdn/files/photos/tham_1756894479697_fca1d544.png`
 
     useEffect(() => {
         // Load YouTube API
@@ -199,13 +199,13 @@ export function YouTubeThumbnailPlayer({ videoId, onStateChange, className = "w-
                     onError={(e) => {
                         // Fallback to medium quality if maxresdefault fails
                         if (thumbnailQuality === "maxresdefault") {
-                            e.target.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+                            e.target.src = `https://cdn.nextbyteitinstitute.com/api/cdn/files/photos/tham_1756894479697_fca1d544.png`
                         }
                     }}
                 />
 
                 {/* Play Button Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group-hover:bg-opacity-40 transition-all duration-300 rounded-lg">
+                <div className="absolute inset-0 flex items-center justify-center  group-hover:bg-opacity-40 transition-all duration-300 rounded-lg">
                     <div className="w-16 h-16 md:w-20 md:h-20 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-all duration-300 transform group-hover:scale-110">
                         <svg
                             className="w-8 h-8 md:w-10 md:h-10 text-white ml-1"

@@ -206,7 +206,7 @@ export function HeroSection() {
                                     {/* Video Container Only */}
                                     <div className="relative">
                                         <div className="aspect-video bg-black/50 rounded-lg overflow-hidden border border-white/20">
-                                            <YouTubeThumbnailPlayer
+                                            <YouTubePlayer
                                                 videoId={videoId}
                                                 onStateChange={(event) => {
                                                     console.log('Hero player state changed:', event.data)
@@ -277,7 +277,7 @@ export function HeroSection() {
                                 {/* Video Container Only */}
                                 <div className="relative">
                                     <div className="aspect-video bg-black/50 rounded-lg overflow-hidden border border-white/20">
-                                        <YouTubeThumbnailPlayer
+                                        <YouTubePlayer
                                             videoId={videoId}
                                             onStateChange={(event) => {
                                                 console.log('Hero player state changed:', event.data)
