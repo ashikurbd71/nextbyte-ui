@@ -28,7 +28,7 @@ export function OurPopuralCourse() {
 
 
     return (
-        <section id="courses" className="relative py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <section className="relative py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute inset-0 -z-10">
                 <div className="absolute top-10 sm:top-20 right-10 sm:right-20 w-32 h-32 sm:w-64 sm:h-64 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-float"></div>

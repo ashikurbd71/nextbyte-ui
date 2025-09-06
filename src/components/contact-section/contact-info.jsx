@@ -24,7 +24,7 @@ export function ContactInfo() {
         {
             icon: <MapPin className="w-5 h-5" />,
             title: "Office Location",
-            primary: "Rangpur , Pyra Chattar",
+            primary: "Rangpur , Payra Chattar",
             secondary: "Rangpur, Bangladesh",
             description: "Visit us during business hours"
         },

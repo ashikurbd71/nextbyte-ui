@@ -12,7 +12,7 @@ export default function ContactPage() {
             { }
             <ContactInfo />
             <ContactMap />
-            <FAQSection />
+
             <BackgroundDecorations />
         </div>
     )

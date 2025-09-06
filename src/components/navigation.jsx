@@ -9,6 +9,10 @@ import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { useAuth } from "../contexts/auth-context"
 import { useRedirect } from "../hooks/use-redirect"
+import { FileSpreadsheet } from "lucide-react"
+import { Mail } from "lucide-react"
+import { CircleStar } from "lucide-react"
+import { Home } from "lucide-react"
 
 export function Navigation() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -98,11 +102,12 @@ export function Navigation() {
     }
 
     const navItems = [
+        { href: "/", label: "Home", icon: <Home className="w-4 h-4" /> },
         { href: "#courses", label: "Courses", icon: <Sparkles className="w-4 h-4" /> },
         { href: "#features", label: "Features", icon: <Zap className="w-4 h-4" /> },
-        { href: "/about", label: "About", icon: <Target className="w-4 h-4" />, isExternal: true },
-        { href: "#testimonials", label: "Testimonials", icon: <Target className="w-4 h-4" /> },
-        { href: "/contact", label: "Contact", icon: <Target className="w-4 h-4" />, isExternal: true },
+        { href: "/about", label: "About", icon: <FileSpreadsheet className="w-4 h-4" />, isExternal: true },
+        { href: "#testimonials", label: "Testimonials", icon: <CircleStar className="w-4 h-4" /> },
+        { href: "/contact", label: "Contact", icon: <Mail className="w-4 h-4" />, isExternal: true },
     ]
 
     return (
@@ -124,7 +129,7 @@ export function Navigation() {
                 </div>
             )}
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className=" mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16 sm:h-20">
                     {/* Logo */}
                     <motion.div
@@ -147,7 +152,7 @@ export function Navigation() {
                                     <Image
                                         src="/colorlogo.png"
                                         alt="NextByte"
-                                        width={120}
+                                        width={100}
                                         height={32}
                                         className={`transition-opacity duration-300 h-6 sm:h-8 w-auto ${scrolled ? 'opacity-100' : 'opacity-0 absolute'}`}
                                     />
@@ -155,7 +160,7 @@ export function Navigation() {
                                     <Image
                                         src="/whitelogo.png"
                                         alt="NextByte"
-                                        width={120}
+                                        width={100}
                                         height={32}
                                         className={`transition-opacity duration-300 h-6 sm:h-8 w-auto ${!scrolled ? 'opacity-100' : 'opacity-0 absolute'}`}
                                     />

@@ -7,6 +7,7 @@ import { TestimonialsSection } from "@/components/testimonials-section"
 import { Footer } from "@/components/footer"
 import { OurPopuralCourse } from "@/components/our-popural-course"
 import { AcademicSection } from "@/components/academic-section"
+import { FAQSection } from "@/components/contact-section"
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
 
       <FeaturesSection />
       <AcademicSection />
+      <FAQSection />
       <TestimonialsSection />
 
     </div>

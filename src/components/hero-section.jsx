@@ -143,7 +143,7 @@ export function HeroSection() {
                 <Lightbulb className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
             </motion.div>
 
-            <div className="max-w-7xl mx-auto py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32 px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className=" max-w-[95%] mx-auto py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32 px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center">
                     {/* Left Column - Text Content */}
                     <motion.div
@@ -159,20 +159,21 @@ export function HeroSection() {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                            <Star className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                             <span className="text-xs sm:text-sm font-medium text-white">
-                                Join 5K+ Students Worldwide
+                                Beyond Skills, Into the Future
                             </span>
                         </motion.div>
 
                         <motion.h1
-                            className=" lg:text-4xl 2xl:text-5xl text-2xl font-bold text-white mb-4 sm:mb-6 leading-tight"
+                            className="lg:text-4xl 2xl:text-5xl text-3xl font-bold text-white mb-4 sm:mb-6 leading-tight"
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            Welcome to NextByte
+                            Your Future Powered by <br />
 
+                            <span className="text-yellow-400">  NextByte Academy</span>
                         </motion.h1>
 
                         <motion.p
@@ -181,10 +182,43 @@ export function HeroSection() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.2 }}
                         >
-                            We have been studying technology since childhood. But do we have a true understanding of modern development? Or do we know what skills to master for the digital age? NextByte is working to firmly establish the core concepts of technology. We are a one-stop solution for Frontend Development, Graphic Design, Video Editing and any Tech Career Path.
+                            We have been studying technology since childhood. But do we have a true understanding of modern
+                            development? Or do we know what skills to master for the digital age? NextByte is working to firmly
+                            establish the core concepts of technology. We are a one-stop solution for Frontend Development,
+                            Graphic Design, Video Editing and any Tech Career Path.
                         </motion.p>
+
+                        {/* Course List */}
                         <motion.div
-                            className="py-10 lg:hidden block  lg:pt-0 "
+                            className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.3 }}
+                        >
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">Frontend Engineering</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">Graphics Design</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">Video Editing</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">IoT Development</span>
+                            </div>
+                            <div className="flex items-center gap-3 sm:col-span-2">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">All Department Courses</span>
+                            </div>
+                        </motion.div>
+
+                        <motion.div
+                            className="py-10 lg:hidden block lg:pt-0"
                             initial={{ opacity: 0, y: 50 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.2 }}
@@ -202,7 +236,7 @@ export function HeroSection() {
                                     ease: "easeInOut"
                                 }}
                             >
-                                <div className="relative bg-gradient-to-br from-purple-900/80 to-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 border border-white/10">
+                                <div className="relative bg-gradient-to-br from-purple-900/80 to-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 border border-white/10">
                                     {/* Video Container Only */}
                                     <div className="relative">
                                         <div className="aspect-video bg-black/50 rounded-lg overflow-hidden border border-white/20">
@@ -221,7 +255,6 @@ export function HeroSection() {
                                 </div>
                             </motion.div>
                         </motion.div>
-
 
                         <motion.div
                             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start items-center"
@@ -242,11 +275,27 @@ export function HeroSection() {
                                     }
                                 }}
                             >
-                                View Courses
+                                View Course
                                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
                             </Button>
 
-
+                            <Button
+                                size="lg"
+                                variant="outline"
+                                className="border-white text-white hover:bg-white hover:text-slate-900 px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-semibold flex items-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 focus-ring w-full sm:w-auto"
+                                onClick={() => {
+                                    const coursesSection = document.getElementById('courses');
+                                    if (coursesSection) {
+                                        coursesSection.scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'start'
+                                        });
+                                    }
+                                }}
+                            >
+                                <Play className="h-4 w-4 sm:h-5 sm:w-5" />
+                                View Free Course
+                            </Button>
                         </motion.div>
 
                         {/* Trust indicators */}
@@ -273,7 +322,7 @@ export function HeroSection() {
                                 ease: "easeInOut"
                             }}
                         >
-                            <div className="relative bg-gradient-to-br from-purple-900/80 to-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 border border-white/10">
+                            <div className="relative bg-gradient-to-br from-purple-900/80 to-slate-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-2 border border-white/10">
                                 {/* Video Container Only */}
                                 <div className="relative">
                                     <div className="aspect-video bg-black/50 rounded-lg overflow-hidden border border-white/20">

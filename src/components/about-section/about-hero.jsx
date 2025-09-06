@@ -4,7 +4,7 @@ import { BookOpen, Users, Award } from "lucide-react"
 
 export function AboutHero() {
     return (
-        <section className="relative py-24 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <section className="relative py-24 min-h-screen  md:py-20 lg:py-64 px-4 sm:px-6 lg:px-8 overflow-hidden">
             {/* Background gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"></div>
 
@@ -33,12 +33,12 @@ export function AboutHero() {
                         </span>
                     </div>
 
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-white mb-3 sm:mb-4 md:mb-6 px-2 sm:px-4 leading-tight">
-                        Empowering <span className="gradient-text">Tech Careers</span>
+                    <h1 className="text-3xl  md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-white mb-3 sm:mb-4 md:mb-6 px-2 sm:px-4 leading-tight">
+                        Empowering <span className="text-yellow-400">Tech Careers</span>
                     </h1>
                     <p className="text-md  text-white/80  mx-auto px-2 sm:px-4 leading-relaxed">
                         NextByte is a leading online learning platform dedicated to transforming tech education.
-                        We believe everyone deserves access to world-class tech skills that drive innovation and career growth.
+                        Empowering Tech Careers is dedicated to transforming ambition into achievement by guiding individuals toward success in the dynamic world of technology. Our mission is to bridge the gap between education and industry by providing practical skills, hands-on training, and career-focused mentorship. We believe that every learner has the potential to thrive, and through personalized guidance, modern tools, and real-world opportunities, we empower them to build confidence, unlock their creativity, and excel in their chosen paths. Whether you are a student exploring technology, a professional upskilling for career growth, or an innovator chasing big dreams, Empowering Tech Careers is here to support, inspire, and prepare you for the challenges and opportunities of the digital future.
                     </p>
                 </div>
 

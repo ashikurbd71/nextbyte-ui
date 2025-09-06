@@ -5,7 +5,7 @@ import { MessageCircle, Mail, Phone, MapPin } from "lucide-react"
 
 export function ContactHeader() {
     return (
-        <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <section className="relative py-24 lg:py-44 min-h-screen  px-4 sm:px-6 lg:px-8 overflow-hidden">
             {/* Background gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"></div>
 
@@ -46,8 +46,8 @@ export function ContactHeader() {
                         </span>
                     </motion.div>
 
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6 px-2 sm:px-4">
-                        Let's <span className="gradient-text">Connect</span>
+                    <h1 className="text-3xl  md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6 px-2 sm:px-4">
+                        Let's <span className="text-yellow-400">Connect</span>
                     </h1>
                     <p className="text-md  text-white/80  mx-auto px-2 sm:px-4 leading-relaxed">
                         Have questions about our courses? Want to discuss your learning journey?
@@ -82,7 +82,7 @@ export function ContactHeader() {
                             icon: <MapPin className="w-6 h-6" />,
                             title: "Visit Us",
                             description: "Our office location",
-                            contact: "Rangpur , Pyra Chattar",
+                            contact: "Rangpur , Payra Chattar",
                             href: "#"
                         }
                     ].map((item, index) => (

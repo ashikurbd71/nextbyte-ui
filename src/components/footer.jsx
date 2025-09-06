@@ -70,7 +70,7 @@ export function Footer() {
     const contactInfo = [
         { icon: <Mail className="w-3 h-3 sm:w-4 sm:h-4" />, text: "career.nextbyteitinstitute@gmail.com", href: "mailto:career.nextbyteitinstitute@gmail.com" },
         { icon: <Phone className="w-3 h-3 sm:w-4 sm:h-4" />, text: "01718180373", href: "tel:01718180373" },
-        { icon: <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />, text: "Rangpur , Pyra Chattar", href: "#" },
+        { icon: <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />, text: "Rangpur , Payra Chattar", href: "#" },
     ]
 
     return (
@@ -90,7 +90,7 @@ export function Footer() {
                 <div className="absolute top-1/2 right-1/4 w-8 h-8 sm:w-16 sm:h-16 bg-gradient-to-r from-green-400 to-blue-400 rounded-full opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
             </div>
 
-            <div className="max-w-7xl mx-auto relative z-10">
+            <div className=" mx-auto relative z-10">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12">
                     {/* Brand section */}
                     <motion.div
@@ -104,7 +104,7 @@ export function Footer() {
                             <Image
                                 src="/whitelogo.png"
                                 alt="NextByte"
-                                width={80}
+                                width={100}
                                 height={32}
                                 className="h-8 sm:h-10 w-auto"
                             />

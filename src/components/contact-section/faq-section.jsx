@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, HelpCircle, BookOpen, Users, CreditCard, Shield, Clock, Award } from "lucide-react"
+import Link from "next/link"
 
 export function FAQSection() {
     const [openIndex, setOpenIndex] = useState(null)
@@ -30,7 +31,7 @@ export function FAQSection() {
         },
         {
             question: "What payment options do you accept?",
-            answer: "We accept all major credit cards, PayPal, and offer flexible payment plans. We also provide installment options to make our courses more accessible. All payments are secure and encrypted.",
+            answer: "We accept all major credit cards, Bkash, Nagad, and sslcommerz. We also provide installment options to make our courses more accessible. All payments are secure and encrypted.",
             icon: <CreditCard className="w-5 h-5" />
         },
         {
@@ -149,10 +150,13 @@ export function FAQSection() {
                             Can't find what you're looking for? Our support team is here to help you with any questions or concerns.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                            <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-2 sm:py-3 px-6 sm:px-8 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base">
-                                Contact Support
-                            </button>
-                            <button 
+
+                            <Link href="/contact">
+                                <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-2 sm:py-3 px-6 sm:px-8 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base">
+                                    Contact Support
+                                </button>
+                            </Link>
+                            <button
                                 onClick={() => {
                                     if (window.location.pathname === '/') {
                                         // If on home page, scroll to courses section
