@@ -374,7 +374,7 @@ export function Navigation() {
                                                 </motion.a>
 
                                                 <motion.a
-                                                    href="https://wa.me/01718180373"
+                                                    href="https://wa.me/+8801718180373"
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-gradient-to-r hover:from-[#3f03ed]/10 hover:to-[#4e0bee]/10 transition-all duration-300 group"
