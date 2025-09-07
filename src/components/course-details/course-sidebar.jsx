@@ -167,7 +167,7 @@ export default function CourseSidebar({
                 className="space-y-3 sm:space-y-4 lg:space-y-6"
             >
                 {/* Course Card */}
-                <Card className="bg-white/10 backdrop-blur-xl border-white/20 p-3 sm:p-4 lg:p-6 sticky top-20 sm:top-24">
+                <Card className="bg-white/10 md:mb-24 mb-44 backdrop-blur-xl border-white/20 p-3 sm:p-4 lg:p-6 sticky top-20 sm:top-24">
                     <div className="text-center mb-3 sm:mb-4 lg:mb-6">
                         <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2">
                             ৳{parseFloat(courseData.discountPrice || courseData.price).toLocaleString()}
@@ -217,10 +217,10 @@ export default function CourseSidebar({
 
                     <Button
                         onClick={handlePaymentWithValidation}
-                        disabled={paymentLoading || !agreedToTerms}
-                        className={`w-full py-2 sm:py-2 lg:py-3 text-sm sm:text-base lg:text-lg font-semibold mb-3 sm:mb-4 transition-all duration-300 ${agreedToTerms
-                            ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-                            : "bg-gray-500 text-gray-300 cursor-not-allowed"
+                        disabled={paymentLoading}
+                        className={`w-full py-2 sm:py-2 lg:py-3 text-sm sm:text-base lg:text-lg font-semibold mb-3 sm:mb-4 transition-all duration-300 ${paymentLoading
+                            ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+                            : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
                             }`}
                     >
                         {paymentLoading ? (
@@ -232,6 +232,9 @@ export default function CourseSidebar({
                             'Enroll Now'
                         )}
                     </Button>
+
+
+
 
                     <div className="text-center mb-3 sm:mb-4 lg:mb-6">
                         <p className="text-gray-300 text-xs sm:text-xs lg:text-sm">30-Day Money-Back Guarantee</p>
@@ -314,7 +317,7 @@ export default function CourseSidebar({
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={handleShare}
-                            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+                            className="fixed inset-0  bg-black/50 backdrop-blur-sm z-50"
                         />
 
                         {/* Modal */}

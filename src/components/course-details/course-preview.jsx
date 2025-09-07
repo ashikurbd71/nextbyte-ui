@@ -18,12 +18,12 @@ export default function CoursePreview({ courseData }) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-4 sm:mb-6 lg:mb-8"
         >
-            <Card className="bg-black/20 backdrop-blur-xl border-white/20 overflow-hidden">
-                <div className="relative aspect-video bg-black">
+            <Card className="bg-black/20 backdrop-blur-xl p-5  border-white/20 overflow-hidden">
+                <div className="relative aspect-video  bg-black">
                     {videoId ? (
                         <YouTubePlayer
                             videoId={videoId}
-                            className="w-full h-full"
+                            className="w-full  h-full"
                         />
                     ) : (
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center">

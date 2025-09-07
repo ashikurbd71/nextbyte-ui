@@ -176,7 +176,7 @@ export function HeroSection() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            Your Future Powered by <br />
+                            Learn Digital Skills With <br />
 
                             <span className="text-yellow-400">  NextByte Academy</span>
                         </motion.h1>
@@ -187,9 +187,8 @@ export function HeroSection() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.2 }}
                         >
-                            We have been studying technology since childhood. But do we have a true understanding of modern
-                            development? Or do we know what skills to master for the digital age? NextByte is working to firmly
-                            establish the core concepts of technology.
+                            NextByte is working to firmly
+                            establish the core concepts of technology. <span className="text-yellow-400">NextByte IT</span> Where Skill Meet The Future 🚀.
                         </motion.p>
 
 
@@ -255,6 +254,16 @@ export function HeroSection() {
                             <div className="flex items-center gap-3">
                                 <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
                                 <span className="text-white text-sm sm:text-base">IoT Development</span>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">Programing</span>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">Digital Marketing</span>
                             </div>
                             {/* <div className="flex items-center gap-3 sm:col-span-2">
                                 <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
