@@ -280,7 +280,7 @@ export function HeroSection() {
                                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
                             </Button>
 
-                            <Link href="/http://www.youtube.com/@NextByteItInstitute" target="_blank">
+                            <a href="/http://www.youtube.com/@NextByteItInstitute" target="_blank">
                                 <Button
                                     size="lg"
                                     variant="outline"
@@ -290,7 +290,7 @@ export function HeroSection() {
                                     <Play className="h-4 w-4 sm:h-5 sm:w-5" />
                                     View Free Course
                                 </Button>
-                            </Link>
+                            </a>
 
                         </motion.div>
 
