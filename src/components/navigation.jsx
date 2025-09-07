@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Menu, X, ArrowRight, Sparkles, Zap, Target } from "lucide-react"
+import { Menu, X, ArrowRight, Sparkles, Zap, Target, Phone, MessageCircle, Mail } from "lucide-react"
 import { Button } from "./ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
@@ -9,13 +9,11 @@ import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { useAuth } from "../contexts/auth-context"
 import { useRedirect } from "../hooks/use-redirect"
-import { FileSpreadsheet } from "lucide-react"
-import { Mail } from "lucide-react"
-import { CircleStar } from "lucide-react"
-import { Home } from "lucide-react"
+import { FileSpreadsheet, CircleStar, Home } from "lucide-react"
 
 export function Navigation() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [isPhoneDropdownOpen, setIsPhoneDropdownOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const router = useRouter()
     const pathname = usePathname()
@@ -29,6 +27,20 @@ export function Navigation() {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+    // Close phone dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (isPhoneDropdownOpen && !event.target.closest('.phone-dropdown-container')) {
+                setIsPhoneDropdownOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [isPhoneDropdownOpen])
 
     // Enhanced navigation function that handles both same-page and cross-page navigation
     const handleNavigation = (e, href) => {
@@ -291,6 +303,115 @@ export function Navigation() {
 
                     {/* Mobile Menu Button */}
                     <div className="md:hidden flex items-center gap-2">
+                        {/* Phone Dropdown Button */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.4, delay: 0.5 }}
+                            whileHover={{ scale: 1.05 }}
+                            className="relative group phone-dropdown-container"
+                        >
+                            <motion.div
+                                className={`absolute -inset-1 rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-300 ${scrolled
+                                    ? 'bg-gradient-to-r from-[#3f03ed] to-[#4e0bee]'
+                                    : 'bg-gradient-to-r from-yellow-300 to-yellow-200'
+                                    }`}
+                            ></motion.div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsPhoneDropdownOpen(!isPhoneDropdownOpen)}
+                                className={`relative transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#3f03ed] focus:ring-opacity-50 w-10 h-10 sm:w-12 sm:h-12 overflow-hidden ${scrolled
+                                    ? 'hover:bg-gradient-to-r hover:from-[#3f03ed]/10 hover:to-[#4e0bee]/10'
+                                    : 'hover:bg-gradient-to-r hover:from-yellow-300/10 hover:to-yellow-200/10'
+                                    }`}
+                                aria-label="Toggle phone menu"
+                            >
+                                {/* Button hover background effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+
+                                <motion.div
+                                    className={`relative z-10 ${scrolled ? "text-[#3f03ed]" : "text-white"}`}
+                                    whileHover={{ rotate: 360 }}
+                                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                                >
+                                    <Phone className="h-5 w-5 sm:h-6 sm:w-6" />
+                                </motion.div>
+                            </Button>
+
+                            {/* Phone Dropdown */}
+                            <AnimatePresence>
+                                {isPhoneDropdownOpen && (
+                                    <motion.div
+                                        className="absolute right-0 top-full mt-2 w-64 bg-white/95 backdrop-blur-md border border-white/20 rounded-lg shadow-2xl z-50"
+                                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <div className="p-4">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="w-8 h-8 bg-gradient-to-br from-[#3f03ed] to-[#4e0bee] rounded-lg flex items-center justify-center">
+                                                    <Phone className="w-4 h-4 text-white" />
+                                                </div>
+                                                <span className="text-sm font-semibold text-gray-700">Contact Us</span>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <motion.a
+                                                    href="tel:01718180373"
+                                                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gradient-to-r hover:from-[#3f03ed]/10 hover:to-[#4e0bee]/10 transition-all duration-300 group"
+                                                    whileHover={{ x: 5 }}
+                                                    onClick={() => setIsPhoneDropdownOpen(false)}
+                                                >
+                                                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                                                        <Phone className="w-4 h-4 text-green-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-700">Call Now</p>
+                                                        <p className="text-xs text-gray-500">01718180373</p>
+                                                    </div>
+                                                </motion.a>
+
+                                                <motion.a
+                                                    href="https://wa.me/01718180373"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gradient-to-r hover:from-[#3f03ed]/10 hover:to-[#4e0bee]/10 transition-all duration-300 group"
+                                                    whileHover={{ x: 5 }}
+                                                    onClick={() => setIsPhoneDropdownOpen(false)}
+                                                >
+                                                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                                                        <MessageCircle className="w-4 h-4 text-green-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-700">WhatsApp</p>
+                                                        <p className="text-xs text-gray-500">Chat with us</p>
+                                                    </div>
+                                                </motion.a>
+                                                {/*
+                                                <motion.a
+                                                    href="mailto:career.nextbyteitinstitute@gmail.com"
+                                                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gradient-to-r hover:from-[#3f03ed]/10 hover:to-[#4e0bee]/10 transition-all duration-300 group"
+                                                    whileHover={{ x: 5 }}
+                                                    onClick={() => setIsPhoneDropdownOpen(false)}
+                                                >
+                                                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                                                        <Mail className="w-4 h-4 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-700">Email Us</p>
+                                                        <p className="text-xs text-gray-500">career.nextbyteitinstitute@gmail.com</p>
+                                                    </div>
+                                                </motion.a> */}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
+
+                        {/* Main Menu Button */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}

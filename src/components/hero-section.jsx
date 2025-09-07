@@ -13,6 +13,10 @@ export function HeroSection() {
 
     console.log("Hero Video ID:", videoId)
 
+    const handleYoutubeLink = () => {
+        window.open('http://www.youtube.com/@NextByteItInstitute', '_blank')
+    }
+
     return (
         <section className="relative min-h-screen 2xl:py-32 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
             {/* Dotted background pattern */}
@@ -280,17 +284,19 @@ export function HeroSection() {
                                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
                             </Button>
 
-                            <a href="http://www.youtube.com/@NextByteItInstitute" target="_blank">
-                                <Button
-                                    size="lg"
-                                    variant="outline"
-                                    className="border-white text-white hover:bg-white hover:text-slate-900 px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-semibold flex items-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 focus-ring w-full sm:w-auto"
 
-                                >
-                                    <Play className="h-4 w-4 sm:h-5 sm:w-5" />
-                                    View Free Course
-                                </Button>
-                            </a>
+                            <Button
+                                size="lg"
+                                onClick={() => {
+                                    window.open('https://www.youtube.com/@NextByteItInstitute', '_blank')
+                                }}
+                                variant="outline"
+                                className="border-white text-white hover:bg-white hover:text-slate-900 px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-semibold flex items-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 focus-ring w-full sm:w-auto"
+                            >
+                                <Play className="h-4 w-4 sm:h-5 sm:w-5" />
+                                View Free Course
+                            </Button>
+
 
                         </motion.div>
 
@@ -339,6 +345,6 @@ export function HeroSection() {
                     </motion.div>
                 </div>
             </div>
-        </section>
+        </section >
     )
 }
