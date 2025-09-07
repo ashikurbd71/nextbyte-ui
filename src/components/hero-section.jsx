@@ -280,7 +280,7 @@ export function HeroSection() {
                                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
                             </Button>
 
-                            <a href="/http://www.youtube.com/@NextByteItInstitute" target="_blank">
+                            <a href="http://www.youtube.com/@NextByteItInstitute" target="_blank">
                                 <Button
                                     size="lg"
                                     variant="outline"
