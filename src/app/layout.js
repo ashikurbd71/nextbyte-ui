@@ -18,6 +18,34 @@ const montserrat = Montserrat({
 export const metadata = {
   title: "NextByte - Learn Tech Skills Online",
   description: "Master frontend engineering, graphic design, logo design, video editing and more with our comprehensive online courses. Start your tech career today!",
+
+  keywords: [
+    "NextByte Academy",
+    "NextByte",
+    "NextByte IT Institute",
+    "NextByte IT",
+    "NextByte IT Institute",
+    "Learn Web Development",
+    "Frontend Engineering",
+    "JavaScript Course",
+    "React Course",
+    "Next.js Course",
+    "Tailwind CSS",
+    "Full Stack Development",
+    "Graphic Design Course",
+    "Logo Design",
+    "UI UX Design",
+    "Figma",
+    "Video Editing Course",
+    "Adobe Premiere Pro",
+    "After Effects",
+    "Freelancing Course",
+    "Fiverr Training",
+    "Upwork Training",
+    "Work From Home",
+    "Learn Tech Skills Online",
+    "Start Tech Career",
+  ],
 };
 
 export default function RootLayout({ children }) {
