@@ -2,13 +2,12 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Play, ChevronRight, FileText, ChevronDown, Eye, X } from "lucide-react"
+import { Play, ChevronRight, FileText, ChevronDown, Video, Lock } from "lucide-react"
 import { YouTubePlayer, extractYouTubeVideoId } from "@/components/ui/youtube-player"
 
 export default function CurriculumTab({ courseData, totalLessons }) {
     const [expandedModules, setExpandedModules] = useState(() => new Set())
-    const [selectedVideo, setSelectedVideo] = useState(null)
-    const [showVideoModal, setShowVideoModal] = useState(false)
+    const [expandedLessons, setExpandedLessons] = useState(() => new Set())
 
     const tabVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -25,25 +24,14 @@ export default function CurriculumTab({ courseData, totalLessons }) {
         setExpandedModules(newExpanded)
     }
 
-    const handlePlayVideo = (lesson) => {
-        if (lesson.videoUrl) {
-            setSelectedVideo(lesson)
-            setShowVideoModal(true)
+    const toggleLesson = (lessonId) => {
+        const newExpanded = new Set(expandedLessons)
+        if (newExpanded.has(lessonId)) {
+            newExpanded.delete(lessonId)
+        } else {
+            newExpanded.add(lessonId)
         }
-    }
-
-    const closeVideoModal = () => {
-        setShowVideoModal(false)
-        setSelectedVideo(null)
-    }
-
-    const isFirstModule = (moduleIndex) => {
-        return moduleIndex === 0
-    }
-
-    const getVideoId = (videoUrl) => {
-        if (!videoUrl) return null
-        return extractYouTubeVideoId(videoUrl)
+        setExpandedLessons(newExpanded)
     }
 
     return (
@@ -65,7 +53,6 @@ export default function CurriculumTab({ courseData, totalLessons }) {
             {courseData.modules && courseData.modules.length > 0 ? (
                 courseData.modules.map((module, index) => {
                     const isExpanded = expandedModules.has(module.id)
-                    const isFirst = isFirstModule(index)
                     return (
                         <motion.div
                             key={module.id}
@@ -82,11 +69,6 @@ export default function CurriculumTab({ courseData, totalLessons }) {
                                     <div className="flex-1">
                                         <h4 className="text-white font-semibold text-xs sm:text-sm lg:text-base">
                                             {module.title}
-                                            {isFirst && (
-                                                <span className="ml-2 text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">
-                                                    Free Preview
-                                                </span>
-                                            )}
                                         </h4>
                                         <p className="text-gray-300 text-xs sm:text-xs lg:text-sm">
                                             {module.lessons?.length || 0} lessons • {module.duration}
@@ -118,8 +100,10 @@ export default function CurriculumTab({ courseData, totalLessons }) {
                                         <div className="p-3 sm:p-4 lg:p-4">
                                             <ul className="space-y-1 sm:space-y-2">
                                                 {module.lessons.map((lesson, lessonIndex) => {
-                                                    const hasVideo = lesson.videoUrl && lesson.videoUrl.trim() !== ''
-                                                    const canPlay = isFirst && hasVideo
+                                                    const isLessonExpanded = expandedLessons.has(lesson.id)
+                                                    const videoId = lesson.videoUrl ? extractYouTubeVideoId(lesson.videoUrl) : null
+                                                    const isFirstModule = index === 0 // Check if this is the first module
+                                                    const isLocked = !isFirstModule // Lock all lessons except in first module
 
                                                     return (
                                                         <motion.li
@@ -127,30 +111,66 @@ export default function CurriculumTab({ courseData, totalLessons }) {
                                                             initial={{ opacity: 0, x: -10 }}
                                                             animate={{ opacity: 1, x: 0 }}
                                                             transition={{ delay: lessonIndex * 0.05 }}
-                                                            className={`flex items-center justify-between space-x-2 lg:space-x-3 text-gray-300 ${canPlay ? 'hover:bg-white/5 p-2 rounded cursor-pointer' : ''}`}
-                                                            onClick={canPlay ? () => handlePlayVideo(lesson) : undefined}
+                                                            className={`border border-white/10 rounded-lg overflow-hidden ${isLocked ? 'opacity-60' : ''}`}
                                                         >
-                                                            <div className="flex items-center space-x-2 lg:space-x-3 flex-1">
-                                                                {canPlay ? (
-                                                                    <Play className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-green-400 flex-shrink-0" />
+                                                            {/* Lesson Header - Clickable only if not locked */}
+                                                            <div
+                                                                className={`flex items-center space-x-2 lg:space-x-3 text-gray-300 p-2 sm:p-3 transition-colors ${isLocked
+                                                                    ? 'cursor-not-allowed'
+                                                                    : 'cursor-pointer hover:bg-white/10'
+                                                                    }`}
+                                                                onClick={() => !isLocked && toggleLesson(lesson.id)}
+                                                            >
+                                                                {isLocked ? (
+                                                                    <Lock className="w-2 h-2 sm:w-3 sm:h-3 lg:w-4 lg:h-4 text-gray-500 flex-shrink-0" />
                                                                 ) : (
-                                                                    <Play className="w-2 h-2 sm:w-3 sm:h-3 lg:w-4 lg:h-4 text-purple-400 flex-shrink-0" />
+                                                                    <Video className="w-2 h-2 sm:w-3 sm:h-3 lg:w-4 lg:h-4 text-purple-400 flex-shrink-0" />
                                                                 )}
-                                                                <span className="text-xs sm:text-sm lg:text-base">{lesson.title}</span>
-                                                                {lesson.isPreview && (
+                                                                <span className={`text-xs sm:text-sm lg:text-base flex-1 ${isLocked ? 'text-gray-500' : ''}`}>
+                                                                    {lesson.title}
+                                                                </span>
+                                                                {lesson.isPreview && !isLocked && (
                                                                     <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">
                                                                         Preview
                                                                     </span>
                                                                 )}
-                                                            </div>
-                                                            {canPlay && (
-                                                                <div className="flex items-center space-x-2">
-                                                                    <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
-                                                                        Play
+                                                                {isLocked && (
+                                                                    <span className="text-xs bg-gray-500/20 text-gray-400 px-2 py-1 rounded">
+                                                                        Locked
                                                                     </span>
-                                                                    <Eye className="w-3 h-3 text-green-400" />
-                                                                </div>
-                                                            )}
+                                                                )}
+                                                                {!isLocked && (
+                                                                    <motion.div
+                                                                        animate={{ rotate: isLessonExpanded ? 90 : 0 }}
+                                                                        transition={{ duration: 0.2 }}
+                                                                        className="text-white flex-shrink-0 ml-2"
+                                                                    >
+                                                                        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                                                                    </motion.div>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Collapsible Video Content - Only for unlocked lessons */}
+                                                            <AnimatePresence>
+                                                                {!isLocked && isLessonExpanded && videoId && (
+                                                                    <motion.div
+                                                                        initial={{ height: 0, opacity: 0 }}
+                                                                        animate={{ height: "auto", opacity: 1 }}
+                                                                        exit={{ height: 0, opacity: 0 }}
+                                                                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                                        className="bg-white/5 overflow-hidden"
+                                                                    >
+                                                                        <div className="p-2 sm:p-3">
+                                                                            <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+                                                                                <YouTubePlayer
+                                                                                    videoId={videoId}
+                                                                                    className="w-full h-full"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
                                                         </motion.li>
                                                     )
                                                 })}
@@ -166,56 +186,6 @@ export default function CurriculumTab({ courseData, totalLessons }) {
                 <div className="text-center text-gray-300 py-8">
                     <FileText className="w-12 h-12 mx-auto mb-4 text-white/30" />
                     <p>No curriculum available yet</p>
-                </div>
-            )}
-
-            {/* Video Modal */}
-            {showVideoModal && selectedVideo && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.2 }}
-                        className="w-full max-w-4xl bg-gray-900 rounded-lg overflow-hidden"
-                    >
-                        {/* Modal Header */}
-                        <div className="flex items-center justify-between p-4 border-b border-white/20">
-                            <h3 className="text-lg font-semibold text-white">
-                                {selectedVideo.title}
-                            </h3>
-                            <button
-                                onClick={closeVideoModal}
-                                className="text-gray-400 hover:text-white transition-colors"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-
-                        {/* Video Player */}
-                        <div className="relative aspect-video bg-black">
-                            {getVideoId(selectedVideo.videoUrl) ? (
-                                <YouTubePlayer
-                                    videoId={getVideoId(selectedVideo.videoUrl)}
-                                    className="w-full h-full"
-                                />
-                            ) : (
-                                <div className="flex items-center justify-center h-full">
-                                    <div className="text-center text-white">
-                                        <Play className="w-12 h-12 mx-auto mb-4 text-white/60" />
-                                        <p className="text-white/60">Video not available</p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Modal Footer */}
-                        <div className="p-4 border-t border-white/20">
-                            <p className="text-sm text-gray-300">
-                                This is a preview video from the first module. Enroll in the course to access all videos and content.
-                            </p>
-                        </div>
-                    </motion.div>
                 </div>
             )}
         </motion.div>

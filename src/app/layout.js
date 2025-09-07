@@ -67,8 +67,10 @@ export default function RootLayout({ children }) {
                 </Suspense>
                 <main className="flex-grow">{children}</main>
                 <Footer />
-                <WhatsAppButton />
-                <MessengerButton />
+                <div className="flex flex-col gap-5">
+                  <WhatsAppButton />
+                  <MessengerButton />
+                </div>
               </div>
             </ErrorBoundary>
           </AuthProvider>
