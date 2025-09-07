@@ -189,38 +189,10 @@ export function HeroSection() {
                         >
                             We have been studying technology since childhood. But do we have a true understanding of modern
                             development? Or do we know what skills to master for the digital age? NextByte is working to firmly
-                            establish the core concepts of technology. We are a one-stop solution for Frontend Development,
-                            Graphic Design, Video Editing and any Tech Career Path.
+                            establish the core concepts of technology.
                         </motion.p>
 
-                        {/* Course List */}
-                        <motion.div
-                            className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.3 }}
-                        >
-                            <div className="flex items-center gap-3">
-                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                                <span className="text-white text-sm sm:text-base">Frontend Engineering</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                                <span className="text-white text-sm sm:text-base">Graphics Design</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                                <span className="text-white text-sm sm:text-base">Video Editing</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                                <span className="text-white text-sm sm:text-base">IoT Development</span>
-                            </div>
-                            <div className="flex items-center gap-3 sm:col-span-2">
-                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                                <span className="text-white text-sm sm:text-base">All Department Courses</span>
-                            </div>
-                        </motion.div>
+
 
                         <motion.div
                             className="py-10 lg:hidden block lg:pt-0"
@@ -260,6 +232,36 @@ export function HeroSection() {
                                 </div>
                             </motion.div>
                         </motion.div>
+
+                        {/* Course List */}
+                        <motion.div
+                            className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.3 }}
+                        >
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">Web Design</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">Graphics Design</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">Video Editing</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base">IoT Development</span>
+                            </div>
+                            {/* <div className="flex items-center gap-3 sm:col-span-2">
+                                <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                <span className="text-white text-sm sm:text-base"> Department Courses</span>
+                            </div> */}
+                        </motion.div>
+
 
                         <motion.div
                             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start items-center"
