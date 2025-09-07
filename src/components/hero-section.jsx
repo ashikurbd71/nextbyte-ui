@@ -4,6 +4,7 @@ import { Button } from "./ui/button"
 import { motion } from "framer-motion"
 import { ArrowRight, Play, Sparkles, Zap, Target, Star, Heart, BookOpen, Code, Rocket, Globe, Lightbulb, CheckCircle } from "lucide-react"
 import { YouTubePlayer, YouTubeThumbnailPlayer, extractYouTubeVideoId } from "./ui/youtube-player"
+import Link from "next/link"
 
 export function HeroSection() {
     // Extract video ID from the YouTube URL
@@ -279,23 +280,18 @@ export function HeroSection() {
                                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
                             </Button>
 
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="border-white text-white hover:bg-white hover:text-slate-900 px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-semibold flex items-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 focus-ring w-full sm:w-auto"
-                                onClick={() => {
-                                    const coursesSection = document.getElementById('courses');
-                                    if (coursesSection) {
-                                        coursesSection.scrollIntoView({
-                                            behavior: 'smooth',
-                                            block: 'start'
-                                        });
-                                    }
-                                }}
-                            >
-                                <Play className="h-4 w-4 sm:h-5 sm:w-5" />
-                                View Free Course
-                            </Button>
+                            <Link href="/http://www.youtube.com/@NextByteItInstitute" target="_blank">
+                                <Button
+                                    size="lg"
+                                    variant="outline"
+                                    className="border-white text-white hover:bg-white hover:text-slate-900 px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-semibold flex items-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 focus-ring w-full sm:w-auto"
+
+                                >
+                                    <Play className="h-4 w-4 sm:h-5 sm:w-5" />
+                                    View Free Course
+                                </Button>
+                            </Link>
+
                         </motion.div>
 
                         {/* Trust indicators */}
