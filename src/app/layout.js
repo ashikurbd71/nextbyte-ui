@@ -6,6 +6,8 @@ import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { ConditionalNavigation } from "@/components/conditional-navigation";
 import { BanNotification } from "@/components/auth/ban-notification";
+import { WhatsAppButton } from "@/components/whatsapp-button";
+import { MessengerButton } from "@/components/messenger-button";
 import { Toaster } from 'sonner'
 import ErrorBoundary from '@/components/error-boundary'
 import { Suspense } from 'react'
@@ -65,6 +67,8 @@ export default function RootLayout({ children }) {
                 </Suspense>
                 <main className="flex-grow">{children}</main>
                 <Footer />
+                <WhatsAppButton />
+                <MessengerButton />
               </div>
             </ErrorBoundary>
           </AuthProvider>

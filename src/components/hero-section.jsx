@@ -178,7 +178,7 @@ export function HeroSection() {
                         >
                             Learn Digital Skills With <br />
 
-                            <span className="text-yellow-400">  NextByte Academy</span>
+                            <span className="text-yellow-400">  NextByte IT</span>
                         </motion.h1>
 
                         <motion.p
