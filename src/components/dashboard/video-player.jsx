@@ -108,21 +108,21 @@ export function VideoPlayer({
     }
 
     return (
-        <Card className="bg-black/20 backdrop-blur-xl border-white/20 overflow-hidden">
+        <Card className="bg-black/20 backdrop-blur-xl  border-white/20 overflow-hidden">
             {/* Video Player */}
-            <div className="relative aspect-video bg-black">
+            <div className="relative   bg-black">
                 {currentVideoUrl && (isYouTubeVideo || isValidVideoUrl(currentVideoUrl)) ? (
                     isYouTubeVideo ? (
                         <YouTubePlayer
                             videoId={youtubeVideoId}
                             onStateChange={handleYouTubeStateChange}
-                            className="w-full h-full"
+                            className="w-full  h-full"
                         />
                     ) : (
                         <iframe
                             src={currentVideoUrl}
                             title={currentLesson?.title || "Course Video"}
-                            className="w-full h-full"
+                            className="w-full  h-full"
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
@@ -149,7 +149,7 @@ export function VideoPlayer({
 
                 {/* Video Controls Overlay - Only for regular videos, not YouTube */}
                 {currentVideoUrl && !isYouTubeVideo && isValidVideoUrl(currentVideoUrl) && !isPlaying && (
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute p-5 inset-0 flex items-center justify-center">
                         <Button
                             onClick={(e) => {
                                 e.preventDefault()
@@ -160,7 +160,7 @@ export function VideoPlayer({
                                     setIsPlaying(true)
                                 }
                             }}
-                            className="bg-purple-600 hover:bg-purple-700 text-white p-3 sm:p-4 rounded-full"
+                            className="bg-purple-600  hover:bg-purple-700 text-white  rounded-full"
                         >
                             <Play className="w-6 h-6 sm:w-8 sm:h-8" />
                         </Button>

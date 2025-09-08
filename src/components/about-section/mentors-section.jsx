@@ -17,72 +17,44 @@ export function MentorsSection() {
                 const result = await getAllAdmins()
 
                 if (result.statusCode === 200 && result.data) {
-                    // Transform API data to match our component structure
-                    const transformedData = Array.isArray(result.data)
-                        ? result.data.map(admin => ({
-                            name: admin.name,
-                            role: admin.designation || "Mentor",
-                            image: admin.photoUrl,
-                            experience: `${admin.experience || 0}+ Years`,
-                            description: admin.bio || "Experienced professional with expertise in various technologies.",
-                            achievements: [
-                                `${admin.experience || 0}+ Years Experience`,
-                                ...(admin.expertise || []).slice(0, 2)
-                            ],
-                            achievementColors: "from-blue-50 to-purple-50",
-                            socialLinks: [
-                                ...(admin.fbLink ? [{
-                                    url: admin.fbLink,
-                                    icon: "facebook",
-                                    bgColor: "bg-blue-600",
-                                    hoverColor: "bg-blue-700"
-                                }] : []),
-                                ...(admin.linkedinLink ? [{
-                                    url: admin.linkedinLink,
-                                    icon: "linkedin",
-                                    bgColor: "bg-blue-700",
-                                    hoverColor: "bg-blue-800"
-                                }] : []),
-                                ...(admin.instaLink ? [{
-                                    url: admin.instaLink,
-                                    icon: "instagram",
-                                    bgColor: "bg-gradient-to-r from-purple-500 to-pink-500",
-                                    hoverColor: "from-purple-600 to-pink-600"
-                                }] : [])
-                            ]
-                        }))
-                        : [result.data].map(admin => ({
-                            name: admin.name,
-                            role: admin.designation || "Mentor",
-                            image: admin.photoUrl,
-                            experience: `${admin.experience || 0}+ Years`,
-                            description: admin.bio || "Experienced professional with expertise in various technologies.",
-                            achievements: [
-                                `${admin.experience || 0}+ Years Experience`,
-                                ...(admin.expertise || []).slice(0, 2)
-                            ],
-                            achievementColors: "from-blue-50 to-purple-50",
-                            socialLinks: [
-                                ...(admin.fbLink ? [{
-                                    url: admin.fbLink,
-                                    icon: "facebook",
-                                    bgColor: "bg-blue-600",
-                                    hoverColor: "bg-blue-700"
-                                }] : []),
-                                ...(admin.linkedinLink ? [{
-                                    url: admin.linkedinLink,
-                                    icon: "linkedin",
-                                    bgColor: "bg-blue-700",
-                                    hoverColor: "bg-blue-800"
-                                }] : []),
-                                ...(admin.instaLink ? [{
-                                    url: admin.instaLink,
-                                    icon: "instagram",
-                                    bgColor: "bg-gradient-to-r from-purple-500 to-pink-500",
-                                    hoverColor: "from-purple-600 to-pink-600"
-                                }] : [])
-                            ]
-                        }))
+                    // Filter and transform API data to match our component structure
+                    // Only show active members (isActive: true)
+                    const activeAdmins = Array.isArray(result.data)
+                        ? result.data.filter(admin => admin.isActive === true)
+                        : (result.data.isActive === true ? [result.data] : [])
+
+                    const transformedData = activeAdmins.map(admin => ({
+                        name: admin.name,
+                        role: admin.designation || "Mentor",
+                        image: admin.photoUrl,
+                        experience: `${admin.experience || 0}+ Years`,
+                        description: admin.bio || "Experienced professional with expertise in various technologies.",
+                        achievements: [
+                            `${admin.experience || 0}+ Years Experience`,
+                            ...(admin.expertise || []).slice(0, 2)
+                        ],
+                        achievementColors: "from-blue-50 to-purple-50",
+                        socialLinks: [
+                            ...(admin.fbLink ? [{
+                                url: admin.fbLink,
+                                icon: "facebook",
+                                bgColor: "bg-blue-600",
+                                hoverColor: "bg-blue-700"
+                            }] : []),
+                            ...(admin.linkedinLink ? [{
+                                url: admin.linkedinLink,
+                                icon: "linkedin",
+                                bgColor: "bg-blue-700",
+                                hoverColor: "bg-blue-800"
+                            }] : []),
+                            ...(admin.instaLink ? [{
+                                url: admin.instaLink,
+                                icon: "instagram",
+                                bgColor: "bg-gradient-to-r from-purple-500 to-pink-500",
+                                hoverColor: "from-purple-600 to-pink-600"
+                            }] : [])
+                        ]
+                    }))
 
                     setMentorsData(transformedData)
                 } else {

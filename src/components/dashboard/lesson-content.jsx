@@ -123,18 +123,18 @@ export function LessonContent({
             switch (contentType) {
                 case 'video':
                     return (
-                        <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+                        <div className="relative aspect-video bg-black  overflow-hidden">
                             {isYouTubeVideo ? (
                                 <YouTubePlayer
                                     videoId={youtubeVideoId}
                                     onStateChange={handleYouTubeStateChange}
-                                    className="w-full h-full"
+                                    className="w-full  h-full"
                                 />
                             ) : (
                                 <video
                                     src={lesson.videoUrl}
                                     title={lesson.title || "Course Video"}
-                                    className="w-full h-full"
+                                    className="w-full p-5 h-full"
                                     controls
                                     onTimeUpdate={(e) => {
                                         try {
@@ -282,7 +282,7 @@ export function LessonContent({
 
     return (
         <div className="space-y-4">
-            <Card className="bg-black/20 backdrop-blur-xl border-white/20 overflow-hidden">
+            <Card className="bg-black/20 backdrop-blur-xl p-3 border-white/20 overflow-hidden">
                 {renderContent()}
             </Card>
 
