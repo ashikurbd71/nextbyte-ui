@@ -416,381 +416,394 @@ export function CourseModules({
                         )}
                     </div>
                     <div className="space-y-3 sm:space-y-4">
-                        {modules.map((module, moduleIndex) => {
-                            const moduleProgress = getModuleProgress(module)
-                            const isUnlocked = isModuleUnlocked(moduleIndex)
-                            const isActive = moduleIndex === currentModuleIndex
-                            const isExpanded = expandedModules.has(moduleIndex)
-                            const moduleAssignments = module?.assignments || []
-                            const completedAssignments = moduleAssignments.filter(assignment =>
-                                submittedAssignments.has(assignment.id)
-                            ).length
+                        {modules
+                            .sort((a, b) => {
+                                // Sort by order field if it exists, otherwise maintain original order
+                                const orderA = a.order !== undefined ? a.order : 0
+                                const orderB = b.order !== undefined ? b.order : 0
+                                return orderA - orderB
+                            })
+                            .map((module, moduleIndex) => {
+                                const moduleProgress = getModuleProgress(module)
+                                const isUnlocked = isModuleUnlocked(moduleIndex)
+                                const isActive = moduleIndex === currentModuleIndex
+                                const isExpanded = expandedModules.has(moduleIndex)
+                                const moduleAssignments = module?.assignments || []
+                                const completedAssignments = moduleAssignments.filter(assignment =>
+                                    submittedAssignments.has(assignment.id)
+                                ).length
 
-                            return (
-                                <div key={module.id}>
-                                    <div
-                                        className={`p-3 sm:p-4 rounded-lg cursor-pointer transition-colors ${isActive
-                                            ? 'bg-purple-500/20 border border-purple-500/30'
-                                            : isUnlocked
-                                                ? 'bg-white/5 hover:bg-white/10'
-                                                : 'bg-white/5 opacity-50 cursor-not-allowed'
-                                            }`}
-                                        onClick={() => isUnlocked && setCurrentModuleIndex(moduleIndex)}
-                                    >
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h4 className="text-sm sm:text-base font-medium text-white flex items-center gap-2">
-                                                {isUnlocked ? (
-                                                    <Unlock className="w-4 h-4 text-green-400 flex-shrink-0" />
-                                                ) : (
-                                                    <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                                                )}
-                                                <span className="truncate">{module?.title}</span>
-                                            </h4>
-                                            <div className="flex items-center gap-2 flex-shrink-0">
-
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        toggleModuleExpansion(moduleIndex)
-                                                    }}
-                                                    className="text-white hover:bg-white/20 p-1"
-                                                >
-                                                    {isExpanded ? (
-                                                        <ChevronUp className="w-4 h-4" />
+                                return (
+                                    <div key={module.id}>
+                                        <div
+                                            className={`p-3 sm:p-4 rounded-lg cursor-pointer transition-colors ${isActive
+                                                ? 'bg-purple-500/20 border border-purple-500/30'
+                                                : isUnlocked
+                                                    ? 'bg-white/5 hover:bg-white/10'
+                                                    : 'bg-white/5 opacity-50 cursor-not-allowed'
+                                                }`}
+                                            onClick={() => isUnlocked && setCurrentModuleIndex(moduleIndex)}
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-sm sm:text-base font-medium text-white flex items-center gap-2">
+                                                    {isUnlocked ? (
+                                                        <Unlock className="w-4 h-4 text-green-400 flex-shrink-0" />
                                                     ) : (
-                                                        <ChevronDown className="w-4 h-4" />
+                                                        <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />
                                                     )}
-                                                </Button>
+                                                    <span className="truncate">{module?.title}</span>
+                                                </h4>
+                                                <div className="flex items-center gap-2 flex-shrink-0">
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            toggleModuleExpansion(moduleIndex)
+                                                        }}
+                                                        className="text-white hover:bg-white/20 p-1"
+                                                    >
+                                                        {isExpanded ? (
+                                                            <ChevronUp className="w-4 h-4" />
+                                                        ) : (
+                                                            <ChevronDown className="w-4 h-4" />
+                                                        )}
+                                                    </Button>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <div className="flex items-center justify-between text-xs text-gray-300 mb-2">
-                                            <span>{formatDuration(module?.duration)}</span>
-                                            <span>{module?.lessons?.length || 0} lessons</span>
-                                        </div>
-
-                                        {/* Assignment Progress */}
-                                        {moduleAssignments.length > 0 && (
                                             <div className="flex items-center justify-between text-xs text-gray-300 mb-2">
-                                                <span className="flex items-center gap-1">
-                                                    <FileText className="w-3 h-3" />
-                                                    Assignments: {completedAssignments}/{moduleAssignments.length}
-                                                </span>
+                                                <span>{formatDuration(module?.duration)}</span>
+                                                <span>{module?.lessons?.length || 0} lessons</span>
                                             </div>
-                                        )}
 
-                                        <div className="w-full bg-white/20 rounded-full h-1">
-                                            <div
-                                                className="bg-purple-500 h-1 rounded-full transition-all duration-300"
-                                                style={{ width: `${moduleProgress}%` }}
-                                            />
-                                        </div>
+                                            {/* Assignment Progress */}
+                                            {moduleAssignments.length > 0 && (
+                                                <div className="flex items-center justify-between text-xs text-gray-300 mb-2">
+                                                    <span className="flex items-center gap-1">
+                                                        <FileText className="w-3 h-3" />
+                                                        Assignments: {completedAssignments}/{moduleAssignments.length}
+                                                    </span>
+                                                </div>
+                                            )}
 
-                                        {/* Enhanced Progress Bar */}
-                                        <div className="mt-2">
-                                            <div className="flex items-center justify-between text-xs text-gray-300 mb-1">
-                                                <span>Progress</span>
-                                                <span>{moduleProgress}%</span>
-                                            </div>
-                                            <div className="w-full bg-white/10 rounded-full h-2">
+                                            <div className="w-full bg-white/20 rounded-full h-1">
                                                 <div
-                                                    className={`h-2 rounded-full transition-all duration-500 ease-out ${moduleProgress === 100
-                                                        ? 'bg-gradient-to-r from-green-400 to-green-500'
-                                                        : 'bg-gradient-to-r from-purple-400 to-blue-500'
-                                                        }`}
+                                                    className="bg-purple-500 h-1 rounded-full transition-all duration-300"
                                                     style={{ width: `${moduleProgress}%` }}
                                                 />
                                             </div>
 
-                                            {/* Module Completion Status */}
-                                            {(() => {
-                                                const detailedProgress = calculateDetailedProgress(module)
-                                                const moduleAssignments = module?.assignments || []
-                                                const completedAssignments = moduleAssignments.filter(assignment =>
-                                                    submittedAssignments.has(assignment.id)
-                                                ).length
-                                                const allAssignmentsComplete = moduleAssignments.length === 0 || completedAssignments === moduleAssignments.length
-                                                const allLessonsComplete = (module?.lessons || []).every(lesson =>
-                                                    completedLessons?.has(lesson.id)
-                                                )
-                                                const isModuleComplete = moduleProgress === 100 && allAssignmentsComplete && allLessonsComplete
+                                            {/* Enhanced Progress Bar */}
+                                            <div className="mt-2">
+                                                <div className="flex items-center justify-between text-xs text-gray-300 mb-1">
+                                                    <span>Progress</span>
+                                                    <span>{moduleProgress}%</span>
+                                                </div>
+                                                <div className="w-full bg-white/10 rounded-full h-2">
+                                                    <div
+                                                        className={`h-2 rounded-full transition-all duration-500 ease-out ${moduleProgress === 100
+                                                            ? 'bg-gradient-to-r from-green-400 to-green-500'
+                                                            : 'bg-gradient-to-r from-purple-400 to-blue-500'
+                                                            }`}
+                                                        style={{ width: `${moduleProgress}%` }}
+                                                    />
+                                                </div>
 
-                                                if (isModuleComplete) {
-                                                    return (
-                                                        <div className="mt-2 flex items-center justify-center gap-2 text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
-                                                            <CheckCircle className="w-3 h-3" />
-                                                            Module Complete! 🎉
-                                                        </div>
+                                                {/* Module Completion Status */}
+                                                {(() => {
+                                                    const detailedProgress = calculateDetailedProgress(module)
+                                                    const moduleAssignments = module?.assignments || []
+                                                    const completedAssignments = moduleAssignments.filter(assignment =>
+                                                        submittedAssignments.has(assignment.id)
+                                                    ).length
+                                                    const allAssignmentsComplete = moduleAssignments.length === 0 || completedAssignments === moduleAssignments.length
+                                                    const allLessonsComplete = (module?.lessons || []).every(lesson =>
+                                                        completedLessons?.has(lesson.id)
                                                     )
-                                                } else {
-                                                    return (
-                                                        <div className="mt-2 space-y-1">
-                                                            {/* Completion Checklist */}
-                                                            <div className="grid grid-cols-2 gap-2 text-xs">
-                                                                <div className={`flex items-center gap-1 ${allLessonsComplete ? 'text-green-400' : 'text-gray-400'}`}>
-                                                                    {allLessonsComplete ? <CheckCircle className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
-                                                                    <span>Lessons: {detailedProgress.lesson}%</span>
-                                                                </div>
-                                                                <div className={`flex items-center gap-1 ${allAssignmentsComplete ? 'text-green-400' : 'text-gray-400'}`}>
-                                                                    {allAssignmentsComplete ? <CheckCircle className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
-                                                                    <span>Assignments: {detailedProgress.assignment}%</span>
-                                                                </div>
+                                                    const isModuleComplete = moduleProgress === 100 && allAssignmentsComplete && allLessonsComplete
+
+                                                    if (isModuleComplete) {
+                                                        return (
+                                                            <div className="mt-2 flex items-center justify-center gap-2 text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
+                                                                <CheckCircle className="w-3 h-3" />
+                                                                Module Complete! 🎉
                                                             </div>
-
-                                                            {/* Progress towards completion */}
-                                                            {moduleProgress < 100 && (
-                                                                <div className="text-xs text-yellow-400 text-center">
-                                                                    {moduleProgress < 50 ? '🚀 Getting started...' :
-                                                                        moduleProgress < 80 ? '📚 Making good progress...' :
-                                                                            '🎯 Almost there!'}
+                                                        )
+                                                    } else {
+                                                        return (
+                                                            <div className="mt-2 space-y-1">
+                                                                {/* Completion Checklist */}
+                                                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                                                    <div className={`flex items-center gap-1 ${allLessonsComplete ? 'text-green-400' : 'text-gray-400'}`}>
+                                                                        {allLessonsComplete ? <CheckCircle className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
+                                                                        <span>Lessons: {detailedProgress.lesson}%</span>
+                                                                    </div>
+                                                                    <div className={`flex items-center gap-1 ${allAssignmentsComplete ? 'text-green-400' : 'text-gray-400'}`}>
+                                                                        {allAssignmentsComplete ? <CheckCircle className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
+                                                                        <span>Assignments: {detailedProgress.assignment}%</span>
+                                                                    </div>
                                                                 </div>
-                                                            )}
-                                                        </div>
-                                                    )
-                                                }
-                                            })()}
-                                        </div>
-                                    </div>
 
-                                    {/* Collapsible Content */}
-                                    {isExpanded && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "auto" }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="ml-2 sm:ml-4 space-y-3 sm:space-y-4"
-                                        >
-                                            {/* Lessons */}
-                                            {module?.lessons && (
-                                                <div className="space-y-2">
-                                                    <h5 className="text-sm font-medium text-white">Lessons</h5>
-                                                    {module.lessons
-                                                        .filter(lesson => lesson.isActive === true)
-                                                        .map((lesson, lessonIndex) => {
-                                                            const lessonUnlocked = isLessonUnlocked(moduleIndex, lessonIndex)
-                                                            const isCompleted = completedLessons?.has(lesson?.id)
-                                                            const isCurrentLesson = lessonIndex === currentLessonIndex
-                                                            const lessonProgress = videoProgress?.[lesson?.id]
-                                                            const hasProgress = lessonProgress && lessonProgress.currentTime > 0
-                                                            const progressPercentage = hasProgress && lessonProgress.duration
-                                                                ? Math.round((lessonProgress.currentTime / lessonProgress.duration) * 100)
-                                                                : 0
+                                                                {/* Progress towards completion */}
+                                                                {moduleProgress < 100 && (
+                                                                    <div className="text-xs text-yellow-400 text-center">
+                                                                        {moduleProgress < 50 ? '🚀 Getting started...' :
+                                                                            moduleProgress < 80 ? '📚 Making good progress...' :
+                                                                                '🎯 Almost there!'}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )
+                                                    }
+                                                })()}
+                                            </div>
+                                        </div>
+
+                                        {/* Collapsible Content */}
+                                        {isExpanded && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: "auto" }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                transition={{ duration: 0.3 }}
+                                                className="ml-2 sm:ml-4 space-y-3 sm:space-y-4"
+                                            >
+                                                {/* Lessons */}
+                                                {module?.lessons && (
+                                                    <div className="space-y-2">
+                                                        <h5 className="text-sm font-medium text-white">Lessons</h5>
+                                                        {module.lessons
+                                                            .filter(lesson => lesson.isActive === true)
+                                                            .sort((a, b) => {
+                                                                // Sort by order field if it exists, otherwise maintain original order
+                                                                const orderA = a.order !== undefined ? a.order : 0
+                                                                const orderB = b.order !== undefined ? b.order : 0
+                                                                return orderA - orderB
+                                                            })
+                                                            .map((lesson, lessonIndex) => {
+                                                                const lessonUnlocked = isLessonUnlocked(moduleIndex, lessonIndex)
+                                                                const isCompleted = completedLessons?.has(lesson?.id)
+                                                                const isCurrentLesson = lessonIndex === currentLessonIndex
+                                                                const lessonProgress = videoProgress?.[lesson?.id]
+                                                                const hasProgress = lessonProgress && lessonProgress.currentTime > 0
+                                                                const progressPercentage = hasProgress && lessonProgress.duration
+                                                                    ? Math.round((lessonProgress.currentTime / lessonProgress.duration) * 100)
+                                                                    : 0
+
+                                                                return (
+                                                                    <div
+                                                                        key={lesson?.id}
+                                                                        className={`p-2 sm:p-3 rounded cursor-pointer transition-colors ${isCurrentLesson
+                                                                            ? 'bg-purple-400/20 border border-purple-400/30'
+                                                                            : lessonUnlocked
+                                                                                ? 'bg-white/5 hover:bg-white/10'
+                                                                                : 'bg-white/5 opacity-50 cursor-not-allowed'
+                                                                            }`}
+                                                                        onClick={() => {
+                                                                            if (lessonUnlocked && handleModuleAndLessonSelect) {
+                                                                                handleModuleAndLessonSelect(moduleIndex, lessonIndex)
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <div className="flex items-center justify-between">
+                                                                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                                                                                {getLessonIcon(lesson, isCompleted, hasProgress, lessonUnlocked)}
+                                                                                <span className="text-xs sm:text-sm text-white truncate">
+                                                                                    {lesson?.title}
+                                                                                </span>
+                                                                                {isCompleted && (
+                                                                                    <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
+                                                                                        ✓ Completed
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                                                                {getLessonContentIndicator(lesson)}
+                                                                                {hasProgress && !isCompleted && (
+                                                                                    <span className="text-xs text-yellow-400">
+                                                                                        {progressPercentage}%
+                                                                                    </span>
+                                                                                )}
+                                                                                <span className="text-xs text-gray-300">
+                                                                                    {formatDuration(lesson?.duration)}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                        {hasProgress && !isCompleted && (
+                                                                            <div className="mt-2 w-full bg-white/10 rounded-full h-1">
+                                                                                <div
+                                                                                    className="bg-yellow-400 h-1 rounded-full transition-all duration-300"
+                                                                                    style={{ width: `${progressPercentage}%` }}
+                                                                                />
+                                                                            </div>
+                                                                        )}
+                                                                        {isCompleted && (
+                                                                            <div className="mt-2 w-full bg-green-400/20 rounded-full h-1">
+                                                                                <div
+                                                                                    className="bg-green-400 h-1 rounded-full transition-all duration-300"
+                                                                                    style={{ width: "100%" }}
+                                                                                />
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                    </div>
+                                                )}
+
+                                                {/* Assignments */}
+                                                {moduleAssignments.length > 0 && (
+                                                    <div className="space-y-3">
+                                                        <h5 className="text-sm font-medium text-white">Assignments</h5>
+                                                        {moduleAssignments.map((assignment) => {
+                                                            const isSubmitted = submittedAssignments.has(assignment.id)
+                                                            const submission = assignmentSubmissions[assignment.id] || {}
+                                                            const assignmentUnlocked = isAssignmentUnlocked(moduleIndex)
 
                                                             return (
-                                                                <div
-                                                                    key={lesson?.id}
-                                                                    className={`p-2 sm:p-3 rounded cursor-pointer transition-colors ${isCurrentLesson
-                                                                        ? 'bg-purple-400/20 border border-purple-400/30'
-                                                                        : lessonUnlocked
-                                                                            ? 'bg-white/5 hover:bg-white/10'
-                                                                            : 'bg-white/5 opacity-50 cursor-not-allowed'
-                                                                        }`}
-                                                                    onClick={() => {
-                                                                        if (lessonUnlocked && handleModuleAndLessonSelect) {
-                                                                            handleModuleAndLessonSelect(moduleIndex, lessonIndex)
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <div className="flex items-center justify-between">
-                                                                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                                                                            {getLessonIcon(lesson, isCompleted, hasProgress, lessonUnlocked)}
-                                                                            <span className="text-xs sm:text-sm text-white truncate">
-                                                                                {lesson?.title}
-                                                                            </span>
-                                                                            {isCompleted && (
-                                                                                <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
-                                                                                    ✓ Completed
+                                                                <div key={assignment.id} className={`border border-white/20 rounded-lg p-3 ${!assignmentUnlocked ? 'opacity-60' : ''}`}>
+                                                                    <div className="flex items-center justify-between mb-2">
+                                                                        <h6 className="text-sm font-medium text-white truncate">
+                                                                            {assignment.title}
+                                                                        </h6>
+                                                                        {isSubmitted && (
+                                                                            <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
+                                                                        )}
+                                                                    </div>
+
+                                                                    <p className="text-xs text-gray-300 mb-3">
+                                                                        {assignment.description}
+                                                                    </p>
+
+                                                                    <div className="space-y-2 mb-3">
+                                                                        <div className="flex items-center gap-2 text-xs">
+                                                                            <Github className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                                                                            {assignmentUnlocked ? (
+                                                                                <a
+                                                                                    href={assignment.githubLink}
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                    className="text-blue-400 hover:underline truncate"
+                                                                                >
+                                                                                    GitHub Repository
+                                                                                </a>
+                                                                            ) : (
+                                                                                <span className="text-gray-500 flex items-center gap-1">
+                                                                                    <Lock className="w-3 h-3" />
+                                                                                    GitHub Repository
                                                                                 </span>
                                                                             )}
                                                                         </div>
-                                                                        <div className="flex items-center gap-2 flex-shrink-0">
-                                                                            {getLessonContentIndicator(lesson)}
-                                                                            {hasProgress && !isCompleted && (
-                                                                                <span className="text-xs text-yellow-400">
-                                                                                    {progressPercentage}%
+                                                                        <div className="flex items-center gap-2 text-xs">
+                                                                            <Globe className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                                                                            {assignmentUnlocked ? (
+                                                                                <a
+                                                                                    href={assignment.liveLink}
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                    className="text-blue-400 hover:underline truncate"
+                                                                                >
+                                                                                    Live Demo
+                                                                                </a>
+                                                                            ) : (
+                                                                                <span className="text-gray-500 flex items-center gap-1">
+                                                                                    <Lock className="w-3 h-3" />
+                                                                                    Live Demo
                                                                                 </span>
                                                                             )}
-                                                                            <span className="text-xs text-gray-300">
-                                                                                {formatDuration(lesson?.duration)}
-                                                                            </span>
                                                                         </div>
                                                                     </div>
-                                                                    {hasProgress && !isCompleted && (
-                                                                        <div className="mt-2 w-full bg-white/10 rounded-full h-1">
-                                                                            <div
-                                                                                className="bg-yellow-400 h-1 rounded-full transition-all duration-300"
-                                                                                style={{ width: `${progressPercentage}%` }}
-                                                                            />
+
+                                                                    <div className="text-xs text-gray-400 mb-3">
+                                                                        <div>Total Marks: {assignment.totalMarks}</div>
+                                                                        <div>Due Date: {new Date(assignment.dueDate).toLocaleDateString()}</div>
+                                                                    </div>
+
+                                                                    {!assignmentUnlocked && (
+                                                                        <div className="text-xs text-yellow-400 mb-3">
+                                                                            Complete all lessons to unlock this assignment
                                                                         </div>
                                                                     )}
-                                                                    {isCompleted && (
-                                                                        <div className="mt-2 w-full bg-green-400/20 rounded-full h-1">
-                                                                            <div
-                                                                                className="bg-green-400 h-1 rounded-full transition-all duration-300"
-                                                                                style={{ width: "100%" }}
+
+                                                                    {assignmentUnlocked && !isSubmitted && (
+                                                                        <div className="space-y-2">
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="GitHub Link"
+                                                                                value={submission.githubLink || ''}
+                                                                                onChange={(e) => updateAssignmentSubmission(assignment.id, 'githubLink', e.target.value)}
+                                                                                className="w-full p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400 text-xs"
                                                                             />
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="Live Link"
+                                                                                value={submission.liveLink || ''}
+                                                                                onChange={(e) => updateAssignmentSubmission(assignment.id, 'liveLink', e.target.value)}
+                                                                                className="w-full p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400 text-xs"
+                                                                            />
+                                                                            <textarea
+                                                                                placeholder="Description"
+                                                                                value={submission.description || ''}
+                                                                                onChange={(e) => updateAssignmentSubmission(assignment.id, 'description', e.target.value)}
+                                                                                className="w-full p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400 text-xs h-20 resize-none"
+                                                                            />
+
+                                                                            {/* Error Message */}
+                                                                            {submissionErrors[assignment.id] && (
+                                                                                <div className="text-xs text-red-400 bg-red-400/10 p-2 rounded">
+                                                                                    {submissionErrors[assignment.id]}
+                                                                                </div>
+                                                                            )}
+
+                                                                            {/* Success Message */}
+                                                                            {submissionSuccess[assignment.id] && (
+                                                                                <div className="text-xs text-green-400 bg-green-400/10 p-2 rounded">
+                                                                                    {submissionSuccess[assignment.id]}
+                                                                                </div>
+                                                                            )}
+
+                                                                            <Button
+                                                                                onClick={() => handleAssignmentSubmit(assignment.id)}
+                                                                                disabled={isSubmittingAssignment}
+                                                                                className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white text-xs py-2"
+                                                                            >
+                                                                                {isSubmittingAssignment ? 'Submitting...' : 'Submit Assignment'}
+                                                                            </Button>
                                                                         </div>
                                                                     )}
-                                                                </div>
-                                                            )
-                                                        })}
-                                                </div>
-                                            )}
 
-                                            {/* Assignments */}
-                                            {moduleAssignments.length > 0 && (
-                                                <div className="space-y-3">
-                                                    <h5 className="text-sm font-medium text-white">Assignments</h5>
-                                                    {moduleAssignments.map((assignment) => {
-                                                        const isSubmitted = submittedAssignments.has(assignment.id)
-                                                        const submission = assignmentSubmissions[assignment.id] || {}
-                                                        const assignmentUnlocked = isAssignmentUnlocked(moduleIndex)
-
-                                                        return (
-                                                            <div key={assignment.id} className={`border border-white/20 rounded-lg p-3 ${!assignmentUnlocked ? 'opacity-60' : ''}`}>
-                                                                <div className="flex items-center justify-between mb-2">
-                                                                    <h6 className="text-sm font-medium text-white truncate">
-                                                                        {assignment.title}
-                                                                    </h6>
                                                                     {isSubmitted && (
-                                                                        <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
-                                                                    )}
-                                                                </div>
-
-                                                                <p className="text-xs text-gray-300 mb-3">
-                                                                    {assignment.description}
-                                                                </p>
-
-                                                                <div className="space-y-2 mb-3">
-                                                                    <div className="flex items-center gap-2 text-xs">
-                                                                        <Github className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                                                                        {assignmentUnlocked ? (
-                                                                            <a
-                                                                                href={assignment.githubLink}
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                                className="text-blue-400 hover:underline truncate"
-                                                                            >
-                                                                                GitHub Repository
-                                                                            </a>
-                                                                        ) : (
-                                                                            <span className="text-gray-500 flex items-center gap-1">
-                                                                                <Lock className="w-3 h-3" />
-                                                                                GitHub Repository
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                    <div className="flex items-center gap-2 text-xs">
-                                                                        <Globe className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                                                                        {assignmentUnlocked ? (
-                                                                            <a
-                                                                                href={assignment.liveLink}
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                                className="text-blue-400 hover:underline truncate"
-                                                                            >
-                                                                                Live Demo
-                                                                            </a>
-                                                                        ) : (
-                                                                            <span className="text-gray-500 flex items-center gap-1">
-                                                                                <Lock className="w-3 h-3" />
-                                                                                Live Demo
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="text-xs text-gray-400 mb-3">
-                                                                    <div>Total Marks: {assignment.totalMarks}</div>
-                                                                    <div>Due Date: {new Date(assignment.dueDate).toLocaleDateString()}</div>
-                                                                </div>
-
-                                                                {!assignmentUnlocked && (
-                                                                    <div className="text-xs text-yellow-400 mb-3">
-                                                                        Complete all lessons to unlock this assignment
-                                                                    </div>
-                                                                )}
-
-                                                                {assignmentUnlocked && !isSubmitted && (
-                                                                    <div className="space-y-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            placeholder="GitHub Link"
-                                                                            value={submission.githubLink || ''}
-                                                                            onChange={(e) => updateAssignmentSubmission(assignment.id, 'githubLink', e.target.value)}
-                                                                            className="w-full p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400 text-xs"
-                                                                        />
-                                                                        <input
-                                                                            type="text"
-                                                                            placeholder="Live Link"
-                                                                            value={submission.liveLink || ''}
-                                                                            onChange={(e) => updateAssignmentSubmission(assignment.id, 'liveLink', e.target.value)}
-                                                                            className="w-full p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400 text-xs"
-                                                                        />
-                                                                        <textarea
-                                                                            placeholder="Description"
-                                                                            value={submission.description || ''}
-                                                                            onChange={(e) => updateAssignmentSubmission(assignment.id, 'description', e.target.value)}
-                                                                            className="w-full p-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400 text-xs h-20 resize-none"
-                                                                        />
-
-                                                                        {/* Error Message */}
-                                                                        {submissionErrors[assignment.id] && (
-                                                                            <div className="text-xs text-red-400 bg-red-400/10 p-2 rounded">
-                                                                                {submissionErrors[assignment.id]}
-                                                                            </div>
-                                                                        )}
-
-                                                                        {/* Success Message */}
-                                                                        {submissionSuccess[assignment.id] && (
-                                                                            <div className="text-xs text-green-400 bg-green-400/10 p-2 rounded">
-                                                                                {submissionSuccess[assignment.id]}
-                                                                            </div>
-                                                                        )}
-
-                                                                        <Button
-                                                                            onClick={() => handleAssignmentSubmit(assignment.id)}
-                                                                            disabled={isSubmittingAssignment}
-                                                                            className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white text-xs py-2"
-                                                                        >
-                                                                            {isSubmittingAssignment ? 'Submitting...' : 'Submit Assignment'}
-                                                                        </Button>
-                                                                    </div>
-                                                                )}
-
-                                                                {isSubmitted && (
-                                                                    <div className="space-y-2">
-                                                                        <div className={`text-xs p-2 rounded ${submission.status === 'approved'
-                                                                            ? 'text-green-400 bg-green-400/10'
-                                                                            : submission.status === 'rejected'
-                                                                                ? 'text-red-400 bg-red-400/10'
-                                                                                : 'text-yellow-400 bg-yellow-400/10'
-                                                                            }`}>
-                                                                            {submission.status === 'approved'
-                                                                                ? 'Assignment approved!'
+                                                                        <div className="space-y-2">
+                                                                            <div className={`text-xs p-2 rounded ${submission.status === 'approved'
+                                                                                ? 'text-green-400 bg-green-400/10'
                                                                                 : submission.status === 'rejected'
-                                                                                    ? 'Assignment needs revision'
-                                                                                    : 'Assignment submitted successfully!'
-                                                                            }
-                                                                        </div>
-
-                                                                        {/* Show submission details */}
-                                                                        {submission.submittedAt && (
-                                                                            <div className="text-xs text-gray-400">
-                                                                                Submitted: {new Date(submission.submittedAt).toLocaleDateString()}
+                                                                                    ? 'text-red-400 bg-red-400/10'
+                                                                                    : 'text-yellow-400 bg-yellow-400/10'
+                                                                                }`}>
+                                                                                {submission.status === 'approved'
+                                                                                    ? 'Assignment approved!'
+                                                                                    : submission.status === 'rejected'
+                                                                                        ? 'Assignment needs revision'
+                                                                                        : 'Assignment submitted successfully!'
+                                                                                }
                                                                             </div>
-                                                                        )}
 
-                                                                        {submission.marks !== undefined && (
-                                                                            <div className="text-xs text-blue-400">
-                                                                                Marks: {submission.marks}/{assignment.totalMarks}
-                                                                            </div>
-                                                                        )}
+                                                                            {/* Show submission details */}
+                                                                            {submission.submittedAt && (
+                                                                                <div className="text-xs text-gray-400">
+                                                                                    Submitted: {new Date(submission.submittedAt).toLocaleDateString()}
+                                                                                </div>
+                                                                            )}
 
-                                                                        {/* {submission.status && (
+                                                                            {submission.marks !== undefined && (
+                                                                                <div className="text-xs text-blue-400">
+                                                                                    Marks: {submission.marks}/{assignment.totalMarks}
+                                                                                </div>
+                                                                            )}
+
+                                                                            {/* {submission.status && (
                                                                             <div className={`text-xs ${submission.status === 'approved'
                                                                                 ? 'text-green-400'
                                                                                 : submission.status === 'pending'
@@ -801,44 +814,44 @@ export function CourseModules({
                                                                             </div>
                                                                         )} */}
 
-                                                                        {/* Review Button */}
-                                                                        <Button
-                                                                            variant="outline"
-                                                                            size="sm"
-                                                                            onClick={async () => {
-                                                                                // Fetch latest submission data
-                                                                                if (submission.submissionId && fetchLatestSubmission) {
-                                                                                    const latestSubmission = await fetchLatestSubmission(submission.submissionId)
-                                                                                    if (latestSubmission) {
-                                                                                        setSelectedSubmission(latestSubmission)
+                                                                            {/* Review Button */}
+                                                                            <Button
+                                                                                variant="outline"
+                                                                                size="sm"
+                                                                                onClick={async () => {
+                                                                                    // Fetch latest submission data
+                                                                                    if (submission.submissionId && fetchLatestSubmission) {
+                                                                                        const latestSubmission = await fetchLatestSubmission(submission.submissionId)
+                                                                                        if (latestSubmission) {
+                                                                                            setSelectedSubmission(latestSubmission)
+                                                                                        } else {
+                                                                                            setSelectedSubmission(submission)
+                                                                                        }
                                                                                     } else {
                                                                                         setSelectedSubmission(submission)
                                                                                     }
-                                                                                } else {
-                                                                                    setSelectedSubmission(submission)
-                                                                                }
-                                                                                setSelectedAssignment(assignment)
-                                                                                setShowReviewModal(true)
-                                                                            }}
-                                                                            className="w-full text-white border-white/20 hover:bg-white/10 text-xs py-1"
-                                                                        >
-                                                                            <Eye className="w-3 h-3 mr-1" />
-                                                                            View Review
-                                                                        </Button>
-                                                                    </div>
-                                                                )
-                                                                }
-                                                            </div>
-                                                        )
-                                                    })}
-                                                </div>
-                                            )}
-                                        </motion.div>
-                                    )
-                                    }
-                                </div>
-                            )
-                        })}
+                                                                                    setSelectedAssignment(assignment)
+                                                                                    setShowReviewModal(true)
+                                                                                }}
+                                                                                className="w-full text-white border-white/20 hover:bg-white/10 text-xs py-1"
+                                                                            >
+                                                                                <Eye className="w-3 h-3 mr-1" />
+                                                                                View Review
+                                                                            </Button>
+                                                                        </div>
+                                                                    )
+                                                                    }
+                                                                </div>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </motion.div>
+                                        )
+                                        }
+                                    </div>
+                                )
+                            })}
                     </div>
 
                     {/* Complete Course Button - Only visible when progress is 100% */}
