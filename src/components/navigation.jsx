@@ -46,6 +46,9 @@ export function Navigation() {
     const handleNavigation = (e, href) => {
         e.preventDefault()
 
+        // Close mobile menu for all navigation
+        setIsMenuOpen(false)
+
         const targetId = href.replace('#', '')
 
         // If we're not on the home page, navigate to home page with anchor
@@ -59,9 +62,6 @@ export function Navigation() {
             const targetElement = document.getElementById(targetId)
 
             if (targetElement) {
-                // Close mobile menu first
-                setIsMenuOpen(false)
-
                 // Get the actual navigation height dynamically
                 const navElement = document.querySelector('nav')
                 const navHeight = navElement ? navElement.offsetHeight : 80
@@ -111,6 +111,12 @@ export function Navigation() {
                 behavior: 'smooth'
             })
         }
+    }
+
+    // Handle external route navigation (for mobile menu)
+    const handleExternalNavigation = (href) => {
+        setIsMenuOpen(false)
+        router.push(href)
     }
 
     const navItems = [
@@ -506,7 +512,14 @@ export function Navigation() {
                                     >
                                         <Link
                                             href={item.href}
-                                            onClick={(e) => item.isExternal ? null : handleNavigation(e, item.href)}
+                                            onClick={(e) => {
+                                                if (item.isExternal) {
+                                                    e.preventDefault()
+                                                    handleExternalNavigation(item.href)
+                                                } else {
+                                                    handleNavigation(e, item.href)
+                                                }
+                                            }}
                                             className={`block px-3 sm:px-4 py-3 text-sm sm:text-base font-medium transition-all duration-300 rounded-lg cursor-pointer group overflow-hidden relative ${scrolled
                                                 ? 'text-gray-700 hover:text-[#3f03ed] hover:bg-gradient-to-r hover:from-[#3f03ed]/10 hover:to-[#4e0bee]/10'
                                                 : 'text-white hover:text-yellow-300 hover:bg-gradient-to-r hover:from-yellow-300/10 hover:to-yellow-200/10'
@@ -551,6 +564,7 @@ export function Navigation() {
                                                 </p>
                                                 <Button
                                                     onClick={() => {
+                                                        setIsMenuOpen(false)
                                                         saveRedirectUrl(pathname)
                                                         router.push('/login')
                                                     }}
@@ -578,7 +592,10 @@ export function Navigation() {
                                                     Access your learning dashboard
                                                 </p>
                                                 <Button
-                                                    onClick={() => window.location.href = '/dashboard'}
+                                                    onClick={() => {
+                                                        setIsMenuOpen(false)
+                                                        window.location.href = '/dashboard'
+                                                    }}
                                                     className={`w-full font-semibold py-3 text-sm transition-all duration-300 bg-gradient-to-br from-[#3f03ed] to-[#4e0bee] hover:from-[#4e0bee] hover:to-[#5a1bef] text-white shadow-xl hover:shadow-2xl group overflow-hidden relative`}
                                                 >
                                                     {/* Mobile button hover background effect */}

@@ -583,9 +583,12 @@ export function CourseModules({
                                                                 return orderA - orderB
                                                             })
                                                             .map((lesson, lessonIndex) => {
-                                                                const lessonUnlocked = isLessonUnlocked(moduleIndex, lessonIndex)
+                                                                // Find the original lesson index in the unsorted array
+                                                                const originalLessonIndex = module.lessons.findIndex(l => l.id === lesson.id)
+
+                                                                const lessonUnlocked = isLessonUnlocked(moduleIndex, originalLessonIndex)
                                                                 const isCompleted = completedLessons?.has(lesson?.id)
-                                                                const isCurrentLesson = lessonIndex === currentLessonIndex
+                                                                const isCurrentLesson = originalLessonIndex === currentLessonIndex
                                                                 const lessonProgress = videoProgress?.[lesson?.id]
                                                                 const hasProgress = lessonProgress && lessonProgress.currentTime > 0
                                                                 const progressPercentage = hasProgress && lessonProgress.duration
@@ -603,7 +606,7 @@ export function CourseModules({
                                                                             }`}
                                                                         onClick={() => {
                                                                             if (lessonUnlocked && handleModuleAndLessonSelect) {
-                                                                                handleModuleAndLessonSelect(moduleIndex, lessonIndex)
+                                                                                handleModuleAndLessonSelect(moduleIndex, originalLessonIndex)
                                                                             }
                                                                         }}
                                                                     >

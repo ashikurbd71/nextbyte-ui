@@ -17,6 +17,17 @@ export function VideoContent({ enrollment }) {
     // Get totalModules from course entity
     const totalModules = enrollment?.course?.totalModules || modules.length
 
+    // Helper function to get sorted lessons for a module
+    const getSortedLessons = (module) => {
+        return module?.lessons
+            ?.filter(lesson => lesson.isActive === true)
+            ?.sort((a, b) => {
+                const orderA = a.order !== undefined ? a.order : 0
+                const orderB = b.order !== undefined ? b.order : 0
+                return orderA - orderB
+            }) || []
+    }
+
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0)
     const [currentLessonIndex, setCurrentLessonIndex] = useState(0)
 
@@ -688,34 +699,62 @@ export function VideoContent({ enrollment }) {
             toast.success(`🎉 Lesson "${currentLesson.title}" marked as completed!`)
         }
 
-        if (currentLessonIndex < currentModule?.lessons?.length - 1) {
-            const newLessonIndex = currentLessonIndex + 1
-            setCurrentLessonIndex(newLessonIndex)
-            saveCurrentPosition(currentModuleIndex, newLessonIndex)
-            toast.info(`📚 Moving to next lesson: ${currentModule?.lessons?.[newLessonIndex]?.title}`)
+        // Get sorted lessons for current module
+        const sortedLessons = getSortedLessons(currentModule)
+
+        // Find current lesson index in sorted array
+        const currentSortedIndex = sortedLessons.findIndex(lesson => lesson.id === currentLesson?.id)
+
+        if (currentSortedIndex < sortedLessons.length - 1) {
+            // Move to next lesson in current module
+            const nextLesson = sortedLessons[currentSortedIndex + 1]
+            const nextLessonOriginalIndex = currentModule.lessons.findIndex(l => l.id === nextLesson.id)
+            setCurrentLessonIndex(nextLessonOriginalIndex)
+            saveCurrentPosition(currentModuleIndex, nextLessonOriginalIndex)
+            toast.info(`📚 Moving to next lesson: ${nextLesson?.title}`)
         } else if (currentModuleIndex < modules.length - 1) {
-            const newModuleIndex = currentModuleIndex + 1
-            setCurrentModuleIndex(newModuleIndex)
-            setCurrentLessonIndex(0)
-            saveCurrentPosition(newModuleIndex, 0)
-            toast.info(`🚀 Moving to next module: ${modules[newModuleIndex]?.title}`)
+            // Move to first lesson of next module
+            const nextModule = modules[currentModuleIndex + 1]
+            const nextModuleSortedLessons = getSortedLessons(nextModule)
+
+            if (nextModuleSortedLessons.length > 0) {
+                const firstLesson = nextModuleSortedLessons[0]
+                const firstLessonOriginalIndex = nextModule.lessons.findIndex(l => l.id === firstLesson.id)
+                setCurrentModuleIndex(currentModuleIndex + 1)
+                setCurrentLessonIndex(firstLessonOriginalIndex)
+                saveCurrentPosition(currentModuleIndex + 1, firstLessonOriginalIndex)
+                toast.info(`🚀 Moving to next module: ${nextModule?.title}`)
+            }
         }
     }
 
     const handlePrevious = () => {
-        if (currentLessonIndex > 0) {
-            const newLessonIndex = currentLessonIndex - 1
-            setCurrentLessonIndex(newLessonIndex)
-            saveCurrentPosition(currentModuleIndex, newLessonIndex)
-            toast.info(`📚 Moving to previous lesson: ${currentModule?.lessons?.[newLessonIndex]?.title}`)
+        // Get sorted lessons for current module
+        const sortedLessons = getSortedLessons(currentModule)
+
+        // Find current lesson index in sorted array
+        const currentSortedIndex = sortedLessons.findIndex(lesson => lesson.id === currentLesson?.id)
+
+        if (currentSortedIndex > 0) {
+            // Move to previous lesson in current module
+            const previousLesson = sortedLessons[currentSortedIndex - 1]
+            const previousLessonOriginalIndex = currentModule.lessons.findIndex(l => l.id === previousLesson.id)
+            setCurrentLessonIndex(previousLessonOriginalIndex)
+            saveCurrentPosition(currentModuleIndex, previousLessonOriginalIndex)
+            toast.info(`📚 Moving to previous lesson: ${previousLesson?.title}`)
         } else if (currentModuleIndex > 0) {
-            const newModuleIndex = currentModuleIndex - 1
-            const previousModule = modules[newModuleIndex]
-            const newLessonIndex = previousModule?.lessons?.length - 1 || 0
-            setCurrentModuleIndex(newModuleIndex)
-            setCurrentLessonIndex(newLessonIndex)
-            saveCurrentPosition(newModuleIndex, newLessonIndex)
-            toast.info(`🚀 Moving to previous module: ${previousModule?.title}`)
+            // Move to last lesson of previous module
+            const previousModule = modules[currentModuleIndex - 1]
+            const previousModuleSortedLessons = getSortedLessons(previousModule)
+
+            if (previousModuleSortedLessons.length > 0) {
+                const lastLesson = previousModuleSortedLessons[previousModuleSortedLessons.length - 1]
+                const lastLessonOriginalIndex = previousModule.lessons.findIndex(l => l.id === lastLesson.id)
+                setCurrentModuleIndex(currentModuleIndex - 1)
+                setCurrentLessonIndex(lastLessonOriginalIndex)
+                saveCurrentPosition(currentModuleIndex - 1, lastLessonOriginalIndex)
+                toast.info(`🚀 Moving to previous module: ${previousModule?.title}`)
+            }
         }
     }
 
@@ -773,8 +812,16 @@ export function VideoContent({ enrollment }) {
                             formatTime={formatTime}
                             onNext={handleNext}
                             onPrevious={handlePrevious}
-                            canGoNext={currentLessonIndex < currentModule?.lessons?.length - 1 || currentModuleIndex < modules?.length - 1}
-                            canGoPrevious={currentLessonIndex > 0 || currentModuleIndex > 0}
+                            canGoNext={(() => {
+                                const sortedLessons = getSortedLessons(currentModule)
+                                const currentSortedIndex = sortedLessons.findIndex(lesson => lesson.id === currentLesson?.id)
+                                return currentSortedIndex < sortedLessons.length - 1 || currentModuleIndex < modules?.length - 1
+                            })()}
+                            canGoPrevious={(() => {
+                                const sortedLessons = getSortedLessons(currentModule)
+                                const currentSortedIndex = sortedLessons.findIndex(lesson => lesson.id === currentLesson?.id)
+                                return currentSortedIndex > 0 || currentModuleIndex > 0
+                            })()}
                         />
 
                         <VideoInfo
