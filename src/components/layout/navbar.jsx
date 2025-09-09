@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import NotificationDropdown from "@/components/notification-dropdown"
 import SupportTicketModal from "@/components/support-ticket/support-ticket-modal"
@@ -13,6 +14,12 @@ export default function Navbar({ onLogout }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isSupportModalOpen, setIsSupportModalOpen] = useState(false)
     const { user } = useAuth()
+    const router = useRouter()
+
+    const handleEnrollNow = () => {
+        // Navigate to home page and scroll to courses section
+        router.push('/#courses')
+    }
 
     console.log(user?.photoUrl)
 
@@ -54,8 +61,11 @@ export default function Navbar({ onLogout }) {
                             Support Ticket
                         </Button>
 
-                        { }
-                        <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm">
+                        {/* Enroll Now Button */}
+                        <Button
+                            onClick={handleEnrollNow}
+                            className="bg-gradient-to-r cursor-pointer from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm"
+                        >
                             Enroll Now
                         </Button>
 
@@ -123,9 +133,12 @@ export default function Navbar({ onLogout }) {
                             {/* Mobile User Actions */}
                             <div className="border-t border-white/20 pt-4 px-4">
 
-
-
-
+                                <Button
+                                    onClick={handleEnrollNow}
+                                    className="w-full bg-gradient-to-r cursor-pointer from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white mb-2"
+                                >
+                                    Enroll Now
+                                </Button>
 
                                 <Button
                                     onClick={() => setIsSupportModalOpen(true)}
