@@ -71,9 +71,9 @@ export default function CourseCard({ course, index }) {
                         <h3 className="text-white font-semibold text-sm sm:text-base lg:text-lg mb-1">
                             {course?.course?.name}
                         </h3>
-                        <p className="text-white/80 text-xs sm:text-sm">
+                        {/* <p className="text-white/80 text-xs sm:text-sm">
                             by {getInstructorName(course?.course?.instructor)}
-                        </p>
+                        </p> */}
                     </div>
                 </div>
                 <div className="p-3 sm:p-4">
