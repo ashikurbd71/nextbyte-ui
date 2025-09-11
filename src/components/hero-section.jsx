@@ -8,13 +8,13 @@ import Link from "next/link"
 
 export function HeroSection() {
     // Extract video ID from the YouTube URL
-    const videoUrl = "https://youtu.be/nm90PqWMd2c?si=ytS0gqs2H4PctUP_"
+    const videoUrl = "https://youtu.be/eHGVk9UpX1Q"
     const videoId = extractYouTubeVideoId(videoUrl)
 
     console.log("Hero Video ID:", videoId)
 
     const handleYoutubeLink = () => {
-        window.open('http://www.youtube.com/@NextByteItInstitute', '_blank')
+        window.open('/public/videoimage.jpg', '_blank')
     }
 
     return (
