@@ -2,13 +2,13 @@
 const nextConfig = {
     // Ensure proper output for Next.js 15
     output: 'standalone',
-  turbopack: false
+  turbopack: false,
 
-    // Enable experimental features that are stable in Next.js 15
-    experimental: {
-        // Enable modern React features (requires babel-plugin-react-compiler)
-        // reactCompiler: true,
-    },
+    // // Enable experimental features that are stable in Next.js 15
+    // experimental: {
+    //     // Enable modern React features (requires babel-plugin-react-compiler)
+    //     // reactCompiler: true,
+    // },
 
     // Image configuration
     images: {
