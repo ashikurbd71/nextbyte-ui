@@ -19,6 +19,7 @@ const makeRequest = async (endpoint, options = {}) => {
     try {
         const url = `${BASE_URL}${endpoint}`;
         const config = {
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers,
@@ -48,6 +49,7 @@ const makeAuthenticatedRequest = async (endpoint, options = {}) => {
 
         const url = `${BASE_URL}${endpoint}`;
         const config = {
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
