@@ -39,12 +39,7 @@ export function Footer() {
     }, [])
 
     const handleCourseClick = (course) => {
-        const params = new URLSearchParams({
-            id: course.id,
-            title: course.name,
-            slug: course.slugName,
-        })
-        router.push(`/course-details?${params.toString()}`)
+        router.push(`/course-details/${course.id}`)
     }
 
     const footerLinks = {

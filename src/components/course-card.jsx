@@ -12,12 +12,7 @@ export function CourseCard({ course, index }) {
     const router = useRouter()
 
     const handleViewDetails = () => {
-        const params = new URLSearchParams({
-            id: course.id,
-            title: course.name,
-            slug: course.slugName,
-        })
-        router.push(`/course-details?${params.toString()}`)
+        router.push(`/course-details/${course.id}`)
     }
 
     // Calculate average rating from reviews

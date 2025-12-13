@@ -31,7 +31,7 @@ export default function ReviewModal({ isOpen, onClose, course, onSubmit, hasRevi
             await onSubmit({
                 rating,
                 comment: comment.trim(),
-                courseId: course.id,
+                courseId: 7,
                 userId: user?.id  // Use actual user ID from auth context
             })
             handleClose()

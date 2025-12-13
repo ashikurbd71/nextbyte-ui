@@ -191,14 +191,20 @@ export function CourseModules({
             toast.success('🎉 Certificate generated successfully! You can now download your certificate.')
         } catch (error) {
             console.error('Error generating certificate:', error)
+            const errorMessage = error?.message || 'Failed to generate certificate'
 
             // Handle specific error for existing certificate
-            if (error.message && error.message.includes('Certificate already exists')) {
+            if (errorMessage.includes('Certificate already exists') ||
+                (error.statusCode === 400 && error.error === 'Bad Request')) {
                 toast.error('📜 Certificate already exists for this enrollment! You can download it from your profile.')
-            } else if (error.statusCode === 400 && error.error === 'Bad Request') {
-                toast.error('📜 Certificate already exists for this enrollment! You can download it from your profile.')
+            } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+                toast.error('Unable to connect to the server. Please check your internet connection and try again.')
+            } else if (errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+                toast.error('Your session has expired. Please log in again.')
+            } else if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+                toast.error('Course information not found. Please refresh the page.')
             } else {
-                toast.error('Failed to generate certificate. Please try again.')
+                toast.error('Unable to generate certificate. Please try again later.')
             }
         } finally {
             setIsGeneratingCertificate(false)
@@ -277,7 +283,17 @@ export function CourseModules({
             toast.success(message)
         } catch (error) {
             console.error('Error updating enrollment progress:', error)
-            toast.error('Failed to update progress. Please try again.')
+            const errorMessage = error?.message || 'Failed to update progress'
+
+            if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+                toast.error('Unable to connect to the server. Please check your internet connection and try again.')
+            } else if (errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+                toast.error('Your session has expired. Please log in again.')
+            } else if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+                toast.error('Course information not found. Please refresh the page.')
+            } else {
+                toast.error('Unable to update progress. Please try again later.')
+            }
         } finally {
             setIsUpdatingProgress(false)
         }
@@ -391,7 +407,17 @@ export function CourseModules({
                     }
                 } catch (error) {
                     console.error('Error updating enrollment progress:', error)
-                    toast.error('Failed to update progress. Please try again.')
+                    const errorMessage = error?.message || 'Failed to update progress'
+
+                    if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+                        toast.error('Unable to connect to the server. Please check your internet connection and try again.')
+                    } else if (errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+                        toast.error('Your session has expired. Please log in again.')
+                    } else if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+                        toast.error('Course information not found. Please refresh the page.')
+                    } else {
+                        toast.error('Unable to update progress. Please try again later.')
+                    }
                 } finally {
                     setIsUpdatingProgress(false)
                 }
@@ -404,18 +430,29 @@ export function CourseModules({
 
     return (
         <>
-            <Card className="bg-white/10 backdrop-blur-xl border-white/20">
-                <div className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between mb-3 sm:mb-4">
-                        <h3 className="text-base sm:text-lg font-semibold text-white">Course Modules</h3>
-                        {isUpdatingProgress && (
-                            <div className="flex items-center gap-2 text-xs text-green-400">
-                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                <span>Updating progress...</span>
+            <Card className="bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-2xl border border-white/20 shadow-2xl shadow-purple-500/10">
+                <div className="p-5 sm:p-7">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center border border-purple-400/30">
+                                <FileText className="w-5 h-5 text-purple-300" />
                             </div>
+                            <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                                Course Modules
+                            </h3>
+                        </div>
+                        {isUpdatingProgress && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="flex items-center gap-2 text-xs text-green-400 bg-green-400/10 px-3 py-1.5 rounded-full border border-green-400/20"
+                            >
+                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                <span className="font-medium">Saving...</span>
+                            </motion.div>
                         )}
                     </div>
-                    <div className="space-y-3 sm:space-y-4">
+                    <div className="space-y-4 sm:space-y-5">
                         {modules
                             .sort((a, b) => {
                                 // Sort by order field if it exists, otherwise maintain original order
@@ -434,132 +471,187 @@ export function CourseModules({
                                 ).length
 
                                 return (
-                                    <div key={module.id}>
-                                        <div
-                                            className={`p-3 sm:p-4 rounded-lg cursor-pointer transition-colors ${isActive
-                                                ? 'bg-purple-500/20 border border-purple-500/30'
+                                    <motion.div
+                                        key={module.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: moduleIndex * 0.1 }}
+                                    >
+                                        <motion.div
+                                            className={`group relative p-5 sm:p-6 rounded-2xl cursor-pointer transition-all duration-300 ${isActive
+                                                ? 'bg-gradient-to-br from-purple-500/30 via-purple-500/20 to-blue-500/20 border-2 border-purple-400/50 shadow-lg shadow-purple-500/20 scale-[1.02]'
                                                 : isUnlocked
-                                                    ? 'bg-white/5 hover:bg-white/10'
-                                                    : 'bg-white/5 opacity-50 cursor-not-allowed'
+                                                    ? 'bg-gradient-to-br from-white/10 via-white/5 to-transparent border border-white/20 hover:border-white/30 hover:bg-white/10 hover:shadow-xl hover:shadow-purple-500/10'
+                                                    : 'bg-gradient-to-br from-gray-800/30 via-gray-800/20 to-transparent border border-gray-700/30 opacity-60 cursor-not-allowed'
                                                 }`}
-                                            onClick={() => isUnlocked && setCurrentModuleIndex(moduleIndex)}
+                                            whileHover={isUnlocked && !isActive ? { scale: 1.01, y: -2 } : {}}
+                                            whileTap={isUnlocked ? { scale: 0.99 } : {}}
+                                            onClick={() => {
+                                                if (isUnlocked) {
+                                                    setCurrentModuleIndex(moduleIndex)
+                                                } else {
+                                                    toast.info('Complete the previous module to unlock this one.')
+                                                }
+                                            }}
                                         >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <h4 className="text-sm sm:text-base font-medium text-white flex items-center gap-2">
-                                                    {isUnlocked ? (
-                                                        <Unlock className="w-4 h-4 text-green-400 flex-shrink-0" />
-                                                    ) : (
-                                                        <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                                                    )}
-                                                    <span className="truncate">{module?.title}</span>
-                                                </h4>
-                                                <div className="flex items-center gap-2 flex-shrink-0">
-
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            toggleModuleExpansion(moduleIndex)
-                                                        }}
-                                                        className="text-white hover:bg-white/20 p-1"
-                                                    >
-                                                        {isExpanded ? (
-                                                            <ChevronUp className="w-4 h-4" />
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                    <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${isUnlocked
+                                                        ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-400/30'
+                                                        : 'bg-gradient-to-br from-gray-700/30 to-gray-800/30 border border-gray-600/30'
+                                                        }`}>
+                                                        {isUnlocked ? (
+                                                            <Unlock className="w-5 h-5 text-green-400" />
                                                         ) : (
-                                                            <ChevronDown className="w-4 h-4" />
+                                                            <Lock className="w-5 h-5 text-gray-500" />
                                                         )}
-                                                    </Button>
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className={`text-base sm:text-lg font-semibold truncate ${isUnlocked ? 'text-white' : 'text-gray-400'
+                                                            }`}>
+                                                            {module?.title}
+                                                        </h4>
+                                                        {moduleIndex === 0 && (
+                                                            <span className="inline-flex items-center gap-1 text-xs text-blue-300 bg-blue-500/20 px-2 py-0.5 rounded-full font-medium mt-1 border border-blue-400/30">
+                                                                <Play className="w-3 h-3" />
+                                                                Start Here
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        toggleModuleExpansion(moduleIndex)
+                                                    }}
+                                                    className="flex-shrink-0 text-white/70 hover:text-white hover:bg-white/10 p-2 rounded-lg transition-all"
+                                                >
+                                                    <motion.div
+                                                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                                                        transition={{ duration: 0.3 }}
+                                                    >
+                                                        <ChevronDown className="w-5 h-5" />
+                                                    </motion.div>
+                                                </Button>
                                             </div>
 
-                                            <div className="flex items-center justify-between text-xs text-gray-300 mb-2">
-                                                <span>{formatDuration(module?.duration)}</span>
-                                                <span>{module?.lessons?.length || 0} lessons</span>
+                                            <div className="flex items-center gap-4 text-sm text-gray-300 mb-4">
+                                                <div className="flex items-center gap-1.5">
+                                                    <Clock className="w-4 h-4 text-purple-300" />
+                                                    <span>{formatDuration(module?.duration)}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <Play className="w-4 h-4 text-blue-300" />
+                                                    <span>{module?.lessons?.length || 0} lessons</span>
+                                                </div>
+                                                {moduleAssignments.length > 0 && (
+                                                    <div className="flex items-center gap-1.5">
+                                                        <FileText className="w-4 h-4 text-green-300" />
+                                                        <span>{completedAssignments}/{moduleAssignments.length} assignments</span>
+                                                    </div>
+                                                )}
                                             </div>
 
-                                            {/* Assignment Progress */}
-                                            {moduleAssignments.length > 0 && (
-                                                <div className="flex items-center justify-between text-xs text-gray-300 mb-2">
-                                                    <span className="flex items-center gap-1">
-                                                        <FileText className="w-3 h-3" />
-                                                        Assignments: {completedAssignments}/{moduleAssignments.length}
+                                            {/* Modern Progress Bar */}
+                                            <div className="mb-4">
+                                                <div className="flex items-center justify-between text-xs font-medium text-gray-300 mb-2">
+                                                    <span>Module Progress</span>
+                                                    <span className={`font-bold ${moduleProgress === 100 ? 'text-green-400' : 'text-purple-400'
+                                                        }`}>
+                                                        {moduleProgress}%
                                                     </span>
                                                 </div>
-                                            )}
-
-                                            <div className="w-full bg-white/20 rounded-full h-1">
-                                                <div
-                                                    className="bg-purple-500 h-1 rounded-full transition-all duration-300"
-                                                    style={{ width: `${moduleProgress}%` }}
-                                                />
+                                                <div className="relative w-full h-3 bg-gray-800/50 rounded-full overflow-hidden border border-gray-700/50">
+                                                    <motion.div
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${moduleProgress}%` }}
+                                                        transition={{ duration: 0.8, ease: "easeOut" }}
+                                                        className={`h-full rounded-full ${moduleProgress === 100
+                                                            ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-green-500'
+                                                            : 'bg-gradient-to-r from-purple-500 via-blue-500 to-purple-400'
+                                                            } shadow-lg`}
+                                                    />
+                                                    {moduleProgress > 0 && moduleProgress < 100 && (
+                                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                                                    )}
+                                                </div>
                                             </div>
 
-                                            {/* Enhanced Progress Bar */}
-                                            <div className="mt-2">
-                                                <div className="flex items-center justify-between text-xs text-gray-300 mb-1">
-                                                    <span>Progress</span>
-                                                    <span>{moduleProgress}%</span>
-                                                </div>
-                                                <div className="w-full bg-white/10 rounded-full h-2">
-                                                    <div
-                                                        className={`h-2 rounded-full transition-all duration-500 ease-out ${moduleProgress === 100
-                                                            ? 'bg-gradient-to-r from-green-400 to-green-500'
-                                                            : 'bg-gradient-to-r from-purple-400 to-blue-500'
-                                                            }`}
-                                                        style={{ width: `${moduleProgress}%` }}
-                                                    />
-                                                </div>
+                                            {/* Module Completion Status */}
+                                            {(() => {
+                                                const detailedProgress = calculateDetailedProgress(module)
+                                                const moduleAssignments = module?.assignments || []
+                                                const completedAssignments = moduleAssignments.filter(assignment =>
+                                                    submittedAssignments.has(assignment.id)
+                                                ).length
+                                                const allAssignmentsComplete = moduleAssignments.length === 0 || completedAssignments === moduleAssignments.length
+                                                const allLessonsComplete = (module?.lessons || []).every(lesson =>
+                                                    completedLessons?.has(lesson.id)
+                                                )
+                                                const isModuleComplete = moduleProgress === 100 && allAssignmentsComplete && allLessonsComplete
 
-                                                {/* Module Completion Status */}
-                                                {(() => {
-                                                    const detailedProgress = calculateDetailedProgress(module)
-                                                    const moduleAssignments = module?.assignments || []
-                                                    const completedAssignments = moduleAssignments.filter(assignment =>
-                                                        submittedAssignments.has(assignment.id)
-                                                    ).length
-                                                    const allAssignmentsComplete = moduleAssignments.length === 0 || completedAssignments === moduleAssignments.length
-                                                    const allLessonsComplete = (module?.lessons || []).every(lesson =>
-                                                        completedLessons?.has(lesson.id)
+                                                if (isModuleComplete) {
+                                                    return (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, scale: 0.9 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            className="mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-green-300 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-4 py-2.5 rounded-xl border border-green-400/30"
+                                                        >
+                                                            <CheckCircle className="w-5 h-5" />
+                                                            <span>Module Complete! 🎉</span>
+                                                        </motion.div>
                                                     )
-                                                    const isModuleComplete = moduleProgress === 100 && allAssignmentsComplete && allLessonsComplete
-
-                                                    if (isModuleComplete) {
-                                                        return (
-                                                            <div className="mt-2 flex items-center justify-center gap-2 text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
-                                                                <CheckCircle className="w-3 h-3" />
-                                                                Module Complete! 🎉
-                                                            </div>
-                                                        )
-                                                    } else {
-                                                        return (
-                                                            <div className="mt-2 space-y-1">
-                                                                {/* Completion Checklist */}
-                                                                <div className="grid grid-cols-2 gap-2 text-xs">
-                                                                    <div className={`flex items-center gap-1 ${allLessonsComplete ? 'text-green-400' : 'text-gray-400'}`}>
-                                                                        {allLessonsComplete ? <CheckCircle className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
-                                                                        <span>Lessons: {detailedProgress.lesson}%</span>
-                                                                    </div>
-                                                                    <div className={`flex items-center gap-1 ${allAssignmentsComplete ? 'text-green-400' : 'text-gray-400'}`}>
-                                                                        {allAssignmentsComplete ? <CheckCircle className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
-                                                                        <span>Assignments: {detailedProgress.assignment}%</span>
-                                                                    </div>
+                                                } else {
+                                                    return (
+                                                        <div className="mt-4 space-y-3">
+                                                            {/* Completion Checklist */}
+                                                            <div className="grid grid-cols-2 gap-3">
+                                                                <div className={`flex items-center gap-2 p-2.5 rounded-lg border transition-all ${allLessonsComplete
+                                                                    ? 'bg-green-500/10 border-green-400/30 text-green-300'
+                                                                    : 'bg-gray-800/30 border-gray-700/30 text-gray-400'
+                                                                    }`}>
+                                                                    {allLessonsComplete ? (
+                                                                        <CheckCircle className="w-4 h-4 text-green-400" />
+                                                                    ) : (
+                                                                        <Circle className="w-4 h-4" />
+                                                                    )}
+                                                                    <span className="text-xs font-medium">Lessons: {detailedProgress.lesson}%</span>
                                                                 </div>
+                                                                <div className={`flex items-center gap-2 p-2.5 rounded-lg border transition-all ${allAssignmentsComplete
+                                                                    ? 'bg-green-500/10 border-green-400/30 text-green-300'
+                                                                    : 'bg-gray-800/30 border-gray-700/30 text-gray-400'
+                                                                    }`}>
+                                                                    {allAssignmentsComplete ? (
+                                                                        <CheckCircle className="w-4 h-4 text-green-400" />
+                                                                    ) : (
+                                                                        <Circle className="w-4 h-4" />
+                                                                    )}
+                                                                    <span className="text-xs font-medium">Assignments: {detailedProgress.assignment}%</span>
+                                                                </div>
+                                                            </div>
 
-                                                                {/* Progress towards completion */}
-                                                                {moduleProgress < 100 && (
-                                                                    <div className="text-xs text-yellow-400 text-center">
+                                                            {/* Progress towards completion */}
+                                                            {moduleProgress < 100 && (
+                                                                <div className={`text-center p-3 rounded-xl border ${moduleProgress < 50
+                                                                    ? 'bg-blue-500/10 border-blue-400/30 text-blue-300'
+                                                                    : moduleProgress < 80
+                                                                        ? 'bg-purple-500/10 border-purple-400/30 text-purple-300'
+                                                                        : 'bg-yellow-500/10 border-yellow-400/30 text-yellow-300'
+                                                                    }`}>
+                                                                    <span className="text-xs font-medium">
                                                                         {moduleProgress < 50 ? '🚀 Getting started...' :
                                                                             moduleProgress < 80 ? '📚 Making good progress...' :
                                                                                 '🎯 Almost there!'}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        )
-                                                    }
-                                                })()}
-                                            </div>
-                                        </div>
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )
+                                                }
+                                            })()}
+                                        </motion.div>
 
                                         {/* Collapsible Content */}
                                         {isExpanded && (
@@ -567,13 +659,16 @@ export function CourseModules({
                                                 initial={{ opacity: 0, height: 0 }}
                                                 animate={{ opacity: 1, height: "auto" }}
                                                 exit={{ opacity: 0, height: 0 }}
-                                                transition={{ duration: 0.3 }}
-                                                className="ml-2 sm:ml-4 space-y-3 sm:space-y-4"
+                                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                className="mt-4 ml-2 sm:ml-4 space-y-3 sm:space-y-4"
                                             >
                                                 {/* Lessons */}
                                                 {module?.lessons && (
-                                                    <div className="space-y-2">
-                                                        <h5 className="text-sm font-medium text-white">Lessons</h5>
+                                                    <div className="space-y-3">
+                                                        <div className="flex items-center gap-2 mb-3">
+                                                            <div className="w-1 h-5 bg-gradient-to-b from-purple-400 to-blue-400 rounded-full"></div>
+                                                            <h5 className="text-sm font-semibold text-white">Lessons</h5>
+                                                        </div>
                                                         {module.lessons
                                                             .filter(lesson => lesson.isActive === true)
                                                             .sort((a, b) => {
@@ -595,62 +690,112 @@ export function CourseModules({
                                                                     ? Math.round((lessonProgress.currentTime / lessonProgress.duration) * 100)
                                                                     : 0
 
+                                                                // Check if this is the first lesson in the sorted order
+                                                                const sortedLessons = module.lessons
+                                                                    .filter(l => l.isActive === true)
+                                                                    .sort((a, b) => {
+                                                                        const orderA = a.order !== undefined ? a.order : 0
+                                                                        const orderB = b.order !== undefined ? b.order : 0
+                                                                        return orderA - orderB
+                                                                    })
+                                                                const isFirstLesson = sortedLessons.length > 0 && sortedLessons[0].id === lesson.id
+
                                                                 return (
-                                                                    <div
+                                                                    <motion.div
                                                                         key={lesson?.id}
-                                                                        className={`p-2 sm:p-3 rounded cursor-pointer transition-colors ${isCurrentLesson
-                                                                            ? 'bg-purple-400/20 border border-purple-400/30'
+                                                                        initial={{ opacity: 0, x: -10 }}
+                                                                        animate={{ opacity: 1, x: 0 }}
+                                                                        transition={{ delay: lessonIndex * 0.05 }}
+                                                                        className={`group relative p-3 sm:p-4 rounded-xl cursor-pointer transition-all duration-300 ${isCurrentLesson
+                                                                            ? 'bg-gradient-to-r from-purple-500/30 via-purple-500/20 to-blue-500/20 border-2 border-purple-400/50 shadow-lg shadow-purple-500/30'
                                                                             : lessonUnlocked
-                                                                                ? 'bg-white/5 hover:bg-white/10'
-                                                                                : 'bg-white/5 opacity-50 cursor-not-allowed'
+                                                                                ? 'bg-gradient-to-r from-white/10 via-white/5 to-transparent border border-white/20 hover:border-white/30 hover:bg-white/10 hover:shadow-md hover:shadow-purple-500/10'
+                                                                                : 'bg-gradient-to-r from-gray-800/30 via-gray-800/20 to-transparent border border-gray-700/30 opacity-60 cursor-not-allowed'
                                                                             }`}
+                                                                        whileHover={lessonUnlocked && !isCurrentLesson ? { scale: 1.02, x: 4 } : {}}
+                                                                        whileTap={lessonUnlocked ? { scale: 0.98 } : {}}
                                                                         onClick={() => {
                                                                             if (lessonUnlocked && handleModuleAndLessonSelect) {
                                                                                 handleModuleAndLessonSelect(moduleIndex, originalLessonIndex)
+                                                                            } else if (!lessonUnlocked) {
+                                                                                // Show helpful message for locked lessons
+                                                                                if (!isModuleUnlocked(moduleIndex)) {
+                                                                                    toast.info('Complete the previous module to unlock this lesson.')
+                                                                                } else {
+                                                                                    toast.info('Complete the previous lesson to unlock this one.')
+                                                                                }
                                                                             }
                                                                         }}
                                                                     >
-                                                                        <div className="flex items-center justify-between">
-                                                                            <div className="flex items-center gap-2 min-w-0 flex-1">
-                                                                                {getLessonIcon(lesson, isCompleted, hasProgress, lessonUnlocked)}
-                                                                                <span className="text-xs sm:text-sm text-white truncate">
-                                                                                    {lesson?.title}
-                                                                                </span>
-                                                                                {isCompleted && (
-                                                                                    <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
-                                                                                        ✓ Completed
+                                                                        <div className="flex items-center justify-between gap-3">
+                                                                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                                                <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${isCompleted
+                                                                                    ? 'bg-green-500/20 border border-green-400/30'
+                                                                                    : hasProgress
+                                                                                        ? 'bg-yellow-500/20 border border-yellow-400/30'
+                                                                                        : lessonUnlocked
+                                                                                            ? 'bg-purple-500/20 border border-purple-400/30'
+                                                                                            : 'bg-gray-700/30 border border-gray-600/30'
+                                                                                    }`}>
+                                                                                    {getLessonIcon(lesson, isCompleted, hasProgress, lessonUnlocked)}
+                                                                                </div>
+                                                                                <div className="flex-1 min-w-0">
+                                                                                    <span className={`text-sm font-medium truncate block ${lessonUnlocked ? 'text-white' : 'text-gray-500'
+                                                                                        }`}>
+                                                                                        {lesson?.title}
                                                                                     </span>
-                                                                                )}
+                                                                                    <div className="flex items-center gap-2 mt-1">
+                                                                                        {isFirstLesson && lessonUnlocked && !isCompleted && (
+                                                                                            <span className="inline-flex items-center gap-1 text-xs text-blue-300 bg-blue-500/20 px-2 py-0.5 rounded-full font-medium border border-blue-400/30">
+                                                                                                <Play className="w-3 h-3" />
+                                                                                                Start
+                                                                                            </span>
+                                                                                        )}
+                                                                                        {isCompleted && (
+                                                                                            <span className="inline-flex items-center gap-1 text-xs text-green-300 bg-green-500/20 px-2 py-0.5 rounded-full font-medium border border-green-400/30">
+                                                                                                <CheckCircle className="w-3 h-3" />
+                                                                                                Done
+                                                                                            </span>
+                                                                                        )}
+                                                                                        {!lessonUnlocked && (
+                                                                                            <span className="inline-flex items-center gap-1 text-xs text-gray-400 bg-gray-700/30 px-2 py-0.5 rounded-full font-medium border border-gray-600/30">
+                                                                                                <Lock className="w-3 h-3" />
+                                                                                                Locked
+                                                                                            </span>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
-                                                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                                                            <div className="flex items-center gap-3 flex-shrink-0">
                                                                                 {getLessonContentIndicator(lesson)}
                                                                                 {hasProgress && !isCompleted && (
-                                                                                    <span className="text-xs text-yellow-400">
-                                                                                        {progressPercentage}%
-                                                                                    </span>
+                                                                                    <div className="flex items-center gap-1.5 px-2 py-1 bg-yellow-500/10 rounded-lg border border-yellow-400/20">
+                                                                                        <span className="text-xs font-semibold text-yellow-300">
+                                                                                            {progressPercentage}%
+                                                                                        </span>
+                                                                                    </div>
                                                                                 )}
-                                                                                <span className="text-xs text-gray-300">
+                                                                                <span className="text-xs text-gray-400 font-medium">
                                                                                     {formatDuration(lesson?.duration)}
                                                                                 </span>
                                                                             </div>
                                                                         </div>
                                                                         {hasProgress && !isCompleted && (
-                                                                            <div className="mt-2 w-full bg-white/10 rounded-full h-1">
-                                                                                <div
-                                                                                    className="bg-yellow-400 h-1 rounded-full transition-all duration-300"
-                                                                                    style={{ width: `${progressPercentage}%` }}
+                                                                            <div className="mt-3 w-full bg-gray-800/50 rounded-full h-1.5 overflow-hidden border border-gray-700/50">
+                                                                                <motion.div
+                                                                                    initial={{ width: 0 }}
+                                                                                    animate={{ width: `${progressPercentage}%` }}
+                                                                                    transition={{ duration: 0.5 }}
+                                                                                    className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-full rounded-full shadow-sm"
                                                                                 />
                                                                             </div>
                                                                         )}
                                                                         {isCompleted && (
-                                                                            <div className="mt-2 w-full bg-green-400/20 rounded-full h-1">
-                                                                                <div
-                                                                                    className="bg-green-400 h-1 rounded-full transition-all duration-300"
-                                                                                    style={{ width: "100%" }}
-                                                                                />
+                                                                            <div className="mt-3 w-full bg-gray-800/50 rounded-full h-1.5 overflow-hidden border border-gray-700/50">
+                                                                                <div className="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full shadow-sm" style={{ width: "100%" }} />
                                                                             </div>
                                                                         )}
-                                                                    </div>
+                                                                    </motion.div>
                                                                 )
                                                             })}
                                                     </div>
@@ -850,15 +995,15 @@ export function CourseModules({
                                                     </div>
                                                 )}
                                             </motion.div>
-                                        )
-                                        }
-                                    </div>
+                                        )}
+                                    </motion.div>
                                 )
                             })}
                     </div>
 
-                    {/* Complete Course Button - Only visible when progress is 100% */}
-                    {(() => {
+                {/* Complete Course Button - Only visible when progress is 100% */}
+                {
+                    (() => {
                         const overallProgress = calculateOverallProgress()
                         if (overallProgress === 100) {
                             return (
@@ -891,41 +1036,42 @@ export function CourseModules({
                             )
                         }
                         return null
-                    })()}
-                </div>
-            </Card >
+                    })()
+                }
+            </div>
+        </Card>
 
-            {/* Assignment Review Modal */}
-            {
-                showReviewModal && selectedSubmission && selectedAssignment && (
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ duration: 0.2 }}
-                            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        {/* Assignment Review Modal */}
+        {
+        showReviewModal && selectedSubmission && selectedAssignment && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                >
+                    <AssignmentSubmissionReview
+                        submission={selectedSubmission}
+                        assignment={selectedAssignment}
+                        onResubmit={handleAssignmentResubmit}
+                        isResubmitting={isResubmittingAssignment}
+                    />
+
+                    <div className="mt-4 flex justify-end">
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowReviewModal(false)}
+                            className="text-white border-white/20 hover:bg-white/10"
                         >
-                            <AssignmentSubmissionReview
-                                submission={selectedSubmission}
-                                assignment={selectedAssignment}
-                                onResubmit={handleAssignmentResubmit}
-                                isResubmitting={isResubmittingAssignment}
-                            />
-
-                            <div className="mt-4 flex justify-end">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setShowReviewModal(false)}
-                                    className="text-white border-white/20 hover:bg-white/10"
-                                >
-                                    Close
-                                </Button>
-                            </div>
-                        </motion.div>
+                            Close
+                        </Button>
                     </div>
-                )
-            }
+                </motion.div>
+            </div>
+        )
+    }
         </>
     )
 }

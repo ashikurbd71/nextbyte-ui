@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { YouTubePlayer, extractYouTubeVideoId } from "@/components/ui/youtube-player"
 import { Play, Download, FileText, Eye, CheckCircle } from "lucide-react"
+import { toast } from 'sonner'
 
 export function LessonContent({
     lesson,
@@ -115,6 +116,7 @@ export function LessonContent({
             }
         } catch (error) {
             console.error('Error in YouTube player state change:', error)
+            // Silently handle - this is not critical for user experience
         }
     }
 
@@ -156,6 +158,7 @@ export function LessonContent({
                                     }}
                                     onError={(e) => {
                                         console.error('Video error:', e)
+                                        toast.error('Unable to load video. Please check your internet connection or try refreshing the page.')
                                     }}
                                 />
                             )}
@@ -251,12 +254,14 @@ export function LessonContent({
                     return (
                         <div className="p-6 text-center">
                             <div className="mb-4">
-                                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                                <div className="w-16 h-16 bg-gray-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <FileText className="w-8 h-8 text-gray-400" />
+                                </div>
                                 <h3 className="text-lg font-semibold text-white mb-2">
-                                    No Content Available
+                                    Content Coming Soon
                                 </h3>
                                 <p className="text-gray-300">
-                                    This lesson doesn't have any content yet.
+                                    This lesson content is being prepared. Please check back later or continue with the next lesson.
                                 </p>
                             </div>
                         </div>
@@ -267,13 +272,21 @@ export function LessonContent({
             return (
                 <div className="p-6 text-center">
                     <div className="mb-4">
-                        <FileText className="w-16 h-16 text-red-400 mx-auto mb-4" />
+                        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <FileText className="w-8 h-8 text-red-400" />
+                        </div>
                         <h3 className="text-lg font-semibold text-white mb-2">
-                            Error Loading Content
+                            Unable to Load Content
                         </h3>
-                        <p className="text-gray-300">
-                            There was an error loading this lesson content.
+                        <p className="text-gray-300 mb-4">
+                            We encountered an issue while loading this lesson. Please try refreshing the page or contact support if the problem persists.
                         </p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm transition-colors"
+                        >
+                            Refresh Page
+                        </button>
                     </div>
                 </div>
             )
@@ -305,24 +318,13 @@ export function LessonContent({
                     ← Previous
                 </Button>
 
-                <div className="flex items-center gap-2">
-                    {!isCompleted && (
-                        <Button
-                            onClick={() => onLessonComplete(lesson?.id)}
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            Mark Complete
-                        </Button>
-                    )}
-                    <Button
-                        onClick={onNext}
-                        disabled={!canGoNext}
-                        className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        Next →
-                    </Button>
-                </div>
+                <Button
+                    onClick={onNext}
+                    disabled={!canGoNext}
+                    className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    Next →
+                </Button>
             </div>
 
             {/* Hidden download link */}

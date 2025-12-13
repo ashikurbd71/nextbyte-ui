@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { toast } from 'sonner'
 
+
+import { motion } from "framer-motion";
 import { VideoPlayer, VideoInfo, CourseModules, NotesSection, ProgressBar, LessonContent } from "@/components/dashboard"
 import { useAuth } from "@/contexts/auth-context"
 import { submitAssignment, resubmitAssignment, getSubmissionById } from "@/app/apis/assignment-submesion/assignmentsubmesionApis"
 import { updateEnrollmentProgress } from "@/app/apis/enrollment-apis/enrollmentApis"
-
+import { Play } from 'lucide-react';
 export function VideoContent({ enrollment }) {
     const { user } = useAuth()
     const courseId = enrollment?.course?.id
@@ -76,6 +78,7 @@ export function VideoContent({ enrollment }) {
             localStorage.setItem(key, JSON.stringify({ moduleIndex, lessonIndex }))
         } catch (error) {
             console.error('Error saving current position:', error)
+            // Silently fail - this is not critical for user experience
         }
     }, [user?.id, courseId])
 
@@ -88,6 +91,7 @@ export function VideoContent({ enrollment }) {
             return savedPosition ? JSON.parse(savedPosition) : { moduleIndex: 0, lessonIndex: 0 }
         } catch (error) {
             console.error('Error loading current position:', error)
+            // Return default position if there's an error
             return { moduleIndex: 0, lessonIndex: 0 }
         }
     }, [user?.id, courseId])
@@ -181,6 +185,8 @@ export function VideoContent({ enrollment }) {
         } catch (error) {
             console.error('Error saving video progress:', error)
             setIsSaving(false)
+            // Show user-friendly error message
+            toast.error('Unable to save your progress. Please try refreshing the page.')
         }
     }, [user?.id, courseId])
 
@@ -225,19 +231,111 @@ export function VideoContent({ enrollment }) {
 
     // Load saved progress on component mount
     useEffect(() => {
-        if (user?.id && courseId) {
+        if (user?.id && courseId && modules.length > 0) {
             const savedProgress = loadVideoProgress()
             setVideoProgress(savedProgress)
 
             // Restore completed lessons from saved progress
-            if (savedProgress.completedLessons) {
-                setCompletedLessons(new Set(savedProgress.completedLessons))
-            }
+            const savedCompletedLessons = savedProgress.completedLessons ? new Set(savedProgress.completedLessons) : new Set()
+            setCompletedLessons(savedCompletedLessons)
 
             // Restore current position
             const savedPosition = loadCurrentPosition()
-            setCurrentModuleIndex(savedPosition.moduleIndex)
-            setCurrentLessonIndex(savedPosition.lessonIndex)
+
+            // Verify that the saved position is valid
+            const savedModule = modules[savedPosition.moduleIndex]
+            const savedLesson = savedModule?.lessons?.[savedPosition.lessonIndex]
+
+            // Helper to check if a lesson is unlocked (using saved completed lessons)
+            const checkLessonUnlocked = (moduleIdx, lessonIdx) => {
+                // First module is always unlocked
+                if (moduleIdx === 0) {
+                    const module = modules[moduleIdx]
+                    if (!module?.lessons?.length) return false
+                    const sortedLessons = getSortedLessons(module)
+                    if (sortedLessons.length === 0) return false
+                    const targetLesson = module.lessons[lessonIdx]
+                    if (!targetLesson) return false
+                    const sortedIndex = sortedLessons.findIndex(l => l.id === targetLesson.id)
+                    // First lesson in sorted order is always unlocked
+                    if (sortedIndex === 0) return true
+                    // For other lessons, check if previous is completed
+                    if (sortedIndex > 0) {
+                        const previousLesson = sortedLessons[sortedIndex - 1]
+                        return previousLesson ? savedCompletedLessons.has(previousLesson.id) : true
+                    }
+                    return false
+                }
+                // For other modules, first check if module is unlocked
+                const previousModule = modules[moduleIdx - 1]
+                if (!previousModule) return false
+                const moduleProgress = previousModule.lessons?.filter(lesson =>
+                    savedCompletedLessons.has(lesson.id)
+                ).length || 0
+                const totalLessons = previousModule.lessons?.length || 0
+                if (totalLessons === 0 || Math.round((moduleProgress / totalLessons) * 100) !== 100) {
+                    return false
+                }
+                // Module is unlocked, check lesson
+                const module = modules[moduleIdx]
+                if (!module?.lessons?.length) return false
+                const sortedLessons = getSortedLessons(module)
+                if (sortedLessons.length === 0) return false
+                const targetLesson = module.lessons[lessonIdx]
+                if (!targetLesson) return false
+                const sortedIndex = sortedLessons.findIndex(l => l.id === targetLesson.id)
+                // First lesson in sorted order is always unlocked
+                if (sortedIndex === 0) return true
+                // For other lessons, check if previous is completed
+                if (sortedIndex > 0) {
+                    const previousLesson = sortedLessons[sortedIndex - 1]
+                    return previousLesson ? savedCompletedLessons.has(previousLesson.id) : true
+                }
+                return false
+            }
+
+            // Check if saved position is valid and unlocked
+            if (savedModule && savedLesson && checkLessonUnlocked(savedPosition.moduleIndex, savedPosition.lessonIndex)) {
+                setCurrentModuleIndex(savedPosition.moduleIndex)
+                setCurrentLessonIndex(savedPosition.lessonIndex)
+            } else {
+                // If saved position is invalid or locked, find first unlocked lesson
+                let found = false
+                for (let moduleIdx = 0; moduleIdx < modules.length && !found; moduleIdx++) {
+                    const module = modules[moduleIdx]
+                    if (!module?.lessons?.length) continue
+                    const sortedLessons = getSortedLessons(module)
+                    if (sortedLessons.length === 0) continue
+
+                    // First module is always accessible, others need previous module completed
+                    if (moduleIdx === 0 || checkLessonUnlocked(moduleIdx, 0)) {
+                        const firstLesson = sortedLessons[0]
+                        const originalIndex = module.lessons.findIndex(l => l.id === firstLesson.id)
+                        if (originalIndex !== -1) {
+                            setCurrentModuleIndex(moduleIdx)
+                            setCurrentLessonIndex(originalIndex)
+                            saveCurrentPosition(moduleIdx, originalIndex)
+                            found = true
+                        }
+                    }
+                }
+                // Fallback to first module, first lesson
+                if (!found) {
+                    const firstModule = modules[0]
+                    if (firstModule?.lessons?.length) {
+                        const sortedLessons = getSortedLessons(firstModule)
+                        if (sortedLessons.length > 0) {
+                            const firstLesson = sortedLessons[0]
+                            const originalIndex = firstModule.lessons.findIndex(l => l.id === firstLesson.id)
+                            if (originalIndex !== -1) {
+                                setCurrentModuleIndex(0)
+                                setCurrentLessonIndex(originalIndex)
+                                saveCurrentPosition(0, originalIndex)
+                            }
+                        }
+                    }
+                }
+            }
 
             // Restore assignment submissions
             const savedSubmissions = loadAssignmentSubmissions()
@@ -247,7 +345,7 @@ export function VideoContent({ enrollment }) {
             const savedSubmittedSet = loadSubmittedAssignments()
             setSubmittedAssignments(savedSubmittedSet)
         }
-    }, [user?.id, courseId, loadVideoProgress, loadCurrentPosition, loadAssignmentSubmissions, loadSubmittedAssignments])
+    }, [user?.id, courseId, modules, loadVideoProgress, loadCurrentPosition, loadAssignmentSubmissions, loadSubmittedAssignments])
 
     // Save progress when user leaves the page
     useEffect(() => {
@@ -327,11 +425,62 @@ export function VideoContent({ enrollment }) {
     }
 
     const isLessonUnlocked = (moduleIndex, lessonIndex) => {
+        // Always unlock the module if it's the first module
+        if (moduleIndex === 0) {
+            // For the first module, unlock the first lesson (by order) and subsequent lessons based on completion
+            const currentModule = modules[moduleIndex]
+            if (!currentModule?.lessons?.length) return false
+
+            // Get sorted lessons for this module
+            const sortedLessons = getSortedLessons(currentModule)
+            if (sortedLessons.length === 0) return false
+
+            // Find the lesson at the given index
+            const targetLesson = currentModule.lessons[lessonIndex]
+            if (!targetLesson) return false
+
+            // Find the position of this lesson in the sorted array
+            const sortedIndex = sortedLessons.findIndex(l => l.id === targetLesson.id)
+
+            // First lesson in sorted order is always unlocked
+            if (sortedIndex === 0) return true
+
+            // For other lessons, check if previous lesson is completed
+            if (sortedIndex > 0) {
+                const previousLesson = sortedLessons[sortedIndex - 1]
+                return previousLesson ? completedLessons.has(previousLesson.id) : true
+            }
+
+            return false
+        }
+
+        // For other modules, check if module is unlocked first
         if (!isModuleUnlocked(moduleIndex)) return false
-        if (lessonIndex === 0) return true
+
         const currentModule = modules[moduleIndex]
-        const previousLesson = currentModule?.lessons?.[lessonIndex - 1]
-        return previousLesson ? completedLessons.has(previousLesson.id) : true
+        if (!currentModule?.lessons?.length) return false
+
+        // Get sorted lessons for this module
+        const sortedLessons = getSortedLessons(currentModule)
+        if (sortedLessons.length === 0) return false
+
+        // Find the lesson at the given index
+        const targetLesson = currentModule.lessons[lessonIndex]
+        if (!targetLesson) return false
+
+        // Find the position of this lesson in the sorted array
+        const sortedIndex = sortedLessons.findIndex(l => l.id === targetLesson.id)
+
+        // First lesson in sorted order is always unlocked for each module
+        if (sortedIndex === 0) return true
+
+        // For other lessons, check if previous lesson is completed
+        if (sortedIndex > 0) {
+            const previousLesson = sortedLessons[sortedIndex - 1]
+            return previousLesson ? completedLessons.has(previousLesson.id) : true
+        }
+
+        return false
     }
 
     const isAssignmentUnlocked = (moduleIndex) => {
@@ -410,7 +559,16 @@ export function VideoContent({ enrollment }) {
             toast.success(`📊 Course progress updated to ${overallProgress}%`)
         } catch (error) {
             console.error('Error updating enrollment progress from video completion:', error)
-            toast.error('Failed to update course progress')
+            const errorMessage = error?.message || 'Failed to update course progress'
+            if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+                toast.error('Unable to connect to the server. Please check your internet connection and try again.')
+            } else if (errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+                toast.error('Your session has expired. Please log in again.')
+            } else if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+                toast.error('Course information not found. Please refresh the page.')
+            } else {
+                toast.error('Unable to update progress. Please try again later.')
+            }
         } finally {
             setIsUpdatingProgress(false)
         }
@@ -423,7 +581,7 @@ export function VideoContent({ enrollment }) {
         try {
             setIsUpdatingProgress(true)
             let totalProgress = 0
-            const totalModules = enrollment?.course?.totalModules
+            const totalModules = enrollment?.course?.totalModules || modules.length
             let completedModules = 0
             let totalAssignments = 0
             let completedAssignments = 0
@@ -461,7 +619,16 @@ export function VideoContent({ enrollment }) {
             toast.success(`📊 Course progress updated to ${overallProgress}%`)
         } catch (error) {
             console.error('Error updating enrollment progress from assignment submission:', error)
-            toast.error('Failed to update course progress')
+            const errorMessage = error?.message || 'Failed to update course progress'
+            if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+                toast.error('Unable to connect to the server. Please check your internet connection and try again.')
+            } else if (errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+                toast.error('Your session has expired. Please log in again.')
+            } else if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+                toast.error('Course information not found. Please refresh the page.')
+            } else {
+                toast.error('Unable to update progress. Please try again later.')
+            }
         } finally {
             setIsUpdatingProgress(false)
         }
@@ -555,10 +722,26 @@ export function VideoContent({ enrollment }) {
             }, 3000)
 
         } catch (error) {
+            const errorMessage = error?.message || 'Failed to submit assignment'
+            let userFriendlyMessage = 'Unable to submit assignment. Please try again.'
+
+            if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+                userFriendlyMessage = 'Unable to connect to the server. Please check your internet connection and try again.'
+            } else if (errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+                userFriendlyMessage = 'Your session has expired. Please log in again.'
+            } else if (errorMessage.includes('validation') || errorMessage.includes('required')) {
+                userFriendlyMessage = 'Please fill in all required fields correctly.'
+            } else if (errorMessage.includes('duplicate') || errorMessage.includes('already')) {
+                userFriendlyMessage = 'This assignment has already been submitted.'
+            } else if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+                userFriendlyMessage = 'Assignment not found. Please refresh the page.'
+            }
+
             setSubmissionErrors(prev => ({
                 ...prev,
-                [assignmentId]: error.message || 'Failed to submit assignment'
+                [assignmentId]: userFriendlyMessage
             }))
+            toast.error(userFriendlyMessage)
         } finally {
             setIsSubmittingAssignment(false)
         }
@@ -653,10 +836,24 @@ export function VideoContent({ enrollment }) {
             }, 3000)
 
         } catch (error) {
+            const errorMessage = error?.message || 'Failed to resubmit assignment'
+            let userFriendlyMessage = 'Unable to resubmit assignment. Please try again.'
+
+            if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+                userFriendlyMessage = 'Unable to connect to the server. Please check your internet connection and try again.'
+            } else if (errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+                userFriendlyMessage = 'Your session has expired. Please log in again.'
+            } else if (errorMessage.includes('validation') || errorMessage.includes('required')) {
+                userFriendlyMessage = 'Please fill in all required fields correctly.'
+            } else if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+                userFriendlyMessage = 'Submission not found. Please refresh the page.'
+            }
+
             setSubmissionErrors(prev => ({
                 ...prev,
-                [submissionId]: error.message || 'Failed to resubmit assignment'
+                [submissionId]: userFriendlyMessage
             }))
+            toast.error(userFriendlyMessage)
         } finally {
             setIsResubmittingAssignment(false)
         }
@@ -693,10 +890,9 @@ export function VideoContent({ enrollment }) {
     }
 
     const handleNext = () => {
-        // Mark current lesson as completed before moving to next
+        // Mark current lesson as completed before moving to next (if not already completed)
         if (currentLesson?.id && !completedLessons.has(currentLesson.id)) {
             handleLessonComplete(currentLesson.id)
-            toast.success(`🎉 Lesson "${currentLesson.title}" marked as completed!`)
         }
 
         // Get sorted lessons for current module
@@ -759,11 +955,18 @@ export function VideoContent({ enrollment }) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-3 sm:p-4 md:p-6">
-            <div className="max-w-7xl py-12 sm:py-16 md:py-24 mx-auto">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/50 to-gray-900 p-3 sm:p-4 md:p-6">
+            <div className="max-w-7xl py-8 sm:py-12 md:py-16 mx-auto">
                 {/* Header */}
-                <div className="mb-4 sm:mb-6">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">{courseTitle}</h1>
+                <div className="mb-6 sm:mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center border border-purple-400/30 shadow-lg">
+                            <Play className="w-6 h-6 text-purple-300" />
+                        </div>
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+                            {courseTitle}
+                        </h1>
+                    </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                         <div className="flex-1">
                             <ProgressBar
@@ -772,20 +975,32 @@ export function VideoContent({ enrollment }) {
                                 showPercentage={false}
                                 className="mb-2"
                             />
-                            <div className="flex items-center justify-between">
-                                <span className="text-gray-300 text-sm sm:text-base">Course Progress</span>
-                                <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-gray-300 text-sm sm:text-base font-medium">Course Progress</span>
+                                <div className="flex items-center gap-3">
                                     {isSaving && (
-                                        <span className="text-green-400 text-xs animate-pulse">
-                                            Saving progress...
-                                        </span>
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            className="flex items-center gap-2 text-green-400 text-xs bg-green-500/10 px-2 py-1 rounded-full border border-green-400/20"
+                                        >
+                                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                            <span className="font-medium">Saving...</span>
+                                        </motion.div>
                                     )}
                                     {isUpdatingProgress && (
-                                        <span className="text-blue-400 text-xs animate-pulse">
-                                            Updating progress...
-                                        </span>
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            className="flex items-center gap-2 text-blue-400 text-xs bg-blue-500/10 px-2 py-1 rounded-full border border-blue-400/20"
+                                        >
+                                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                                            <span className="font-medium">Updating...</span>
+                                        </motion.div>
                                     )}
-                                    <span className="text-white font-semibold text-sm sm:text-base">{progress}%</span>
+                                    <span className="text-white font-bold text-base sm:text-lg bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                                        {progress}%
+                                    </span>
                                 </div>
                             </div>
                             {/* Current Position Indicator */}
@@ -861,13 +1076,12 @@ export function VideoContent({ enrollment }) {
                             submissionErrors={submissionErrors}
                             submissionSuccess={submissionSuccess}
                             enrollmentId={enrollment?.id}
-                            totalModules={totalModules} // Add this line
+                            totalModules={totalModules}
                         />
-
-                        { }
                     </div>
                 </div>
             </div>
         </div>
     )
 }
+

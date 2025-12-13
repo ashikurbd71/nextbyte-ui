@@ -20,13 +20,10 @@ export default function CourseCard({ course, index }) {
 
     const handleAnalyticsClick = () => {
         const params = new URLSearchParams({
-            id: course.id,
             title: course?.course?.name,
-            progress: course.progress,
-            instructor: getInstructorName(course?.course?.instructor),
             totalStudents: course?.course?.totalJoin
         })
-        router.push(`/dashboard/course-analytics?${params.toString()}`)
+        router.push(`/dashboard/${course.id}/course-analytics?${params.toString()}`)
     }
 
 
@@ -91,13 +88,7 @@ export default function CourseCard({ course, index }) {
                         <Button
                             className="flex-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 hover:from-pink-600 hover:via-purple-600 hover:to-indigo-700 text-white shadow-lg text-xs sm:text-sm py-1.5 sm:py-2"
                             onClick={() => {
-                                const params = new URLSearchParams({
-                                    id: course.id,
-                                    title: course?.course?.name,
-                                    progress: course.progress,
-                                    instructor: getInstructorName(course?.course?.instructor)
-                                })
-                                router.push(`/dashboard/video?${params.toString()}`)
+                                router.push(`/dashboard/${course.id}/video`)
                             }}
                         >
                             Continue

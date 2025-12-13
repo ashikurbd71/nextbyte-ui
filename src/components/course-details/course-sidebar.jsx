@@ -42,7 +42,7 @@ export default function CourseSidebar({
     // Generate share URL
     const getShareUrl = () => {
         if (typeof window !== 'undefined') {
-            return `${window.location.origin}/course-details?id=${courseData.id}`
+            return `${window.location.origin}/course-details/${courseData.id}`
         }
         return ''
     }

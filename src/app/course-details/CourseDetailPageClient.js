@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -22,7 +22,7 @@ import {
 
 export function CourseDetailPageClient() {
     const router = useRouter()
-    const searchParams = useSearchParams()
+    const params = useParams()
     const { user } = useAuth()
     const { saveRedirectUrl } = useRedirect()
     const [activeTab, setActiveTab] = useState('overview')
@@ -35,7 +35,7 @@ export function CourseDetailPageClient() {
     const [mounted, setMounted] = useState(false)
     const [courseId, setCourseId] = useState(null)
 
-    // Get courseId from URL parameters using useSearchParams
+    // Get courseId from route parameters using useParams
     useEffect(() => {
         setMounted(true)
     }, [])
@@ -43,8 +43,8 @@ export function CourseDetailPageClient() {
     useEffect(() => {
         if (!mounted) return
 
-        // Get URL parameters using useSearchParams
-        const id = searchParams.get('id')
+        // Get course ID from route params
+        const id = params?.id
 
         if (id) {
             setCourseId(id)
@@ -52,7 +52,7 @@ export function CourseDetailPageClient() {
             setError("Course ID is required")
             setLoading(false)
         }
-    }, [mounted, searchParams])
+    }, [mounted, params])
 
     useEffect(() => {
         if (!courseId) return
