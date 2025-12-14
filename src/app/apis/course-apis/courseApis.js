@@ -68,7 +68,7 @@ const makeAuthenticatedRequest = async (endpoint, options = {}) => {
 // 1. Get all courses
 export const getAllCourses = async () => {
     try {
-        const response = await makeRequest();
+        const response = await makeRequest('/');
         return response;
     } catch (error) {
         throw error;
