@@ -19,7 +19,7 @@ const makeRequest = async (endpoint, options = {}) => {
     try {
         const url = `${BASE_URL}${endpoint}`;
         const config = {
-            credentials: 'include',
+ 
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers,
@@ -49,7 +49,7 @@ const makeAuthenticatedRequest = async (endpoint, options = {}) => {
 
         const url = `${BASE_URL}${endpoint}`;
         const config = {
-            credentials: 'include',
+         
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -68,7 +68,7 @@ const makeAuthenticatedRequest = async (endpoint, options = {}) => {
 // 1. Get all courses
 export const getAllCourses = async () => {
     try {
-        const response = await makeRequest('/');
+        const response = await makeRequest();
         return response;
     } catch (error) {
         throw error;
