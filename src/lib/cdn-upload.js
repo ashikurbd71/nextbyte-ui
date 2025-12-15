@@ -21,7 +21,7 @@ export const uploadToCDN = async (file, folder = 'documents') => {
         //     formData.append('folder', folder)
         // }
 
-        const response = await fetch(`${CDN_BASE_URL}/api/cdn/upload`, {
+        const response = await fetch(`${CDN_BASE_URL}/upload`, {
             method: 'POST',
             body: formData,
         })
